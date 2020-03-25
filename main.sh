@@ -39,7 +39,7 @@ docker exec \
     --tty \
     --workdir "$workdir" \
     "$container" \
-    apt-get build-dep ./
+    apt-get build-dep "$workdir"
 
 docker exec \
     --tty \
