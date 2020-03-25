@@ -26,7 +26,7 @@ docker start \
     "$container"
 
 echo
-docker exec $container pwd
+docker exec $container ls -lha
 echo
 exit
 
