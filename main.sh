@@ -35,7 +35,7 @@ docker exec \
 
 docker exec \
     "$container" \
-    apt-get build-dep "$directory"
+    apt-get build-dep ./
 
 docker exec \
     "$container" \
