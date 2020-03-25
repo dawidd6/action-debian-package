@@ -25,6 +25,11 @@ docker create \
 docker start \
     "$container"
 
+echo
+docker exec $container pwd
+echo
+exit
+
 docker exec \
     "$container" \
     apt-get update
