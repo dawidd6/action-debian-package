@@ -1,11 +1,14 @@
 #!/bin/sh
 
-set -e
+set -eu
 
-directory="$PWD/${INPUT_DIRECTORY}"
+directory="${INPUT_DIRECTORY:-}"
 os="${INPUT_OS:-"debian"}"
 
-cd "$directory"
+directory_runner="$RUNNER_WORKSPACE/$directory"
+directory_container="$GITHUB_WORKSPACE/$directory"
+
+cd "$directory_container"
 
 package="$(dpkg-parsechangelog -S Source)"
 version="$(dpkg-parsechangelog -S Version)"
@@ -17,8 +20,8 @@ image="$os:$distribution"
 docker create \
     --tty \
     --name "$container" \
-    --volume "$directory":"$directory" \
-    --workdir "$directory" \
+    --volume "$directory_runner":"$directory_container" \
+    --workdir "$directory_container" \
     "$image" \
     sleep inf
 
@@ -40,7 +43,7 @@ docker exec \
 
 docker exec \
     "$container" \
-    apt-get build-dep ./
+    apt-get build-dep "$directory_container"
 
 docker exec \
     "$container" \
