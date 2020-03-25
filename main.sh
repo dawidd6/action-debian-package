@@ -22,6 +22,9 @@ docker create \
     "$image" \
     sleep inf
 
+docker start \
+    "$container"
+
 docker exec \
     --tty \
     "$container" \
