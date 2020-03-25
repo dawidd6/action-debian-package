@@ -33,7 +33,7 @@ docker exec \
 docker exec \
     --tty \
     "$container" \
-    apt-get install dpkg-dev debhelper
+    apt-get install -y dpkg-dev debhelper
 
 docker exec \
     --tty \
