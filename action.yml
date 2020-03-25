@@ -1,12 +1,15 @@
-name: 'Container Action Template'
-description: 'Get started with Container actions'
-author: 'GitHub'
-inputs: 
-  myInput:
-    description: 'Input to use'
-    default: 'world'
+name: Build Debian package
+description: Build Debian package from source for selected target release
+branding:
+  color: red
+  icon: package
+inputs:
+  directory:
+    description: Directory where Debianized sources live (defaults to current)
+    required: false
+  os:
+    description: '"ubuntu" or "debian" (defaults to "debian")'
+    required: false
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.myInput }}
+  using: docker
+  image: Dockerfile

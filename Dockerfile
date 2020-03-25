@@ -1,7 +1,5 @@
-FROM alpine:3.10
+FROM docker
 
-COPY LICENSE README.md /
+COPY main.sh /
 
-COPY entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/main.sh"]

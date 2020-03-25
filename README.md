@@ -1,5 +1,13 @@
-# Container Action Template
+# Build Debian package Github Action
 
-To get started, click the `Use this template` button on this repository [which will create a new repository based on this template](https://github.blog/2019-06-06-generate-new-repositories-with-repository-templates/).
+An action that builds a Debian package from source for specified distribution.
 
-For info on how to build your first Container action, see the [toolkit docs folder](https://github.com/actions/toolkit/blob/master/docs/container-action.md).
+## Usage
+
+```yaml
+- name: Build Debian package
+  uses: dawidd6/action-debian-package@master
+  with:
+    directory: ./
+    os: debian
+```
