@@ -36,7 +36,7 @@ async function main() {
         const match = changelog.match(regex)
         const { package, version, revision, distribution } = match.groups
         const os = await getOS(getDistribution(distribution))
-        const container = package + "_" + version
+        const container = package
         const image = os + ":" + getDistribution(distribution)
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
