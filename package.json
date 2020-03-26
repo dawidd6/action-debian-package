@@ -1,0 +1,8 @@
+{
+  "name": "action-debian-package",
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "@actions/exec": "^1.0.3",
+    "firstline": "^2.0.2"
+  }
+}

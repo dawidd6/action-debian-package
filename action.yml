@@ -5,11 +5,13 @@ branding:
   icon: package
 inputs:
   directory:
-    description: Directory where Debianized sources live (defaults to current)
+    description: Directory where Debian sources are, relative to workspace
     required: false
+    default: ./
   os:
-    description: '"ubuntu" or "debian" (defaults to "debian")'
+    description: '"ubuntu" or "debian"'
     required: false
+    default: debian
 runs:
-  using: docker
-  image: Dockerfile
+  using: node12
+  main: main.js
