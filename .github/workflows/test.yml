@@ -32,7 +32,7 @@ jobs:
             ref: ubuntu/0.16.2-1
           - package: bc
             repo: https://git.launchpad.net/ubuntu/+source/bc
-            ref: applied/1.07.1-2build1
+            ref: ubuntu/focal
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
