@@ -79,7 +79,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg-buildpackage", "-S", "-us", "-uc"
+            "dpkg-buildpackage", "-tc"
         ])
         core.endGroup()
     } catch (error) {
