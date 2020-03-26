@@ -32,9 +32,9 @@ async function main() {
 
         const file = path.join(sourceDirectory, "debian/changelog")
         const changelog = await firstline(file)
-        const regex = /^(?<package>.+) \((?<version>[^-]+)-?(?<revision>[^-]+)?\) (?<distribution>.+);/
+        const regex = /^(?<package>.+) \((?<epoch>[^:-]+)?:?(?<version>[^:-]+)-?(?<revision>[^:-]+)?\) (?<distribution>.+);/
         const match = changelog.match(regex)
-        const { package, version, revision, distribution } = match.groups
+        const { package, epoch, version, revision, distribution } = match.groups
         const os = await getOS(getDistribution(distribution))
         const container = package
         const image = os + ":" + getDistribution(distribution)
@@ -44,6 +44,7 @@ async function main() {
         core.startGroup("Print details")
         const details = {
             package: package,
+            epoch: epoch,
             version: version,
             revision: revision,
             distribution: getDistribution(distribution),
