@@ -14,7 +14,7 @@ package="$(dpkg-parsechangelog -S Source)"
 version="$(dpkg-parsechangelog -S Version)"
 distribution="$(dpkg-parsechangelog -S Distribution | sed 's/UNRELEASED/unstable/')"
 
-container="$package_$version"
+container="$package-$version"
 image="$os:$distribution"
 
 docker create \
