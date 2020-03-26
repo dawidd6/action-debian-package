@@ -13,10 +13,10 @@ async function main() {
 
         const file = path.join(directoryRunner, "debian/changelog")
         const changelog = await firstline(file)
-        const regex = /^(?<package>.+) \((?<version>.+)\) (?<distribution>.+); (?<options>.+)$/
+        const regex = /^(?<package>.+) \((?<version>.+)-(?<revision>.+)\) (?<distribution>.+); (?<options>.+)$/
         const match = changelog.match(regex)
-        const { package, version, distribution } = match.groups
-        const container = package + "_" + version
+        const { package, version, revision, distribution } = match.groups
+        const container = package + "_" + version + "-" + revision
         const image = os + ":" + distribution.replace("UNRELEASED", "unstable")
 
         core.startGroup("Create container")
@@ -35,6 +35,19 @@ async function main() {
         await exec.exec("docker", [
             "start",
             container
+        ])
+        core.endGroup()
+
+        core.startGroup("Create tarball")
+        await exec.exec("docker", [
+            "exec",
+            container,
+            "tar",
+            "--exclude-vcs",
+            "--exclude", "./debian",
+            "--transform", `s/^\./${package}-${version}/`,
+            "-cvzf", `../${package}_${version}.orig.tar.gz`,
+            "./"
         ])
         core.endGroup()
 
