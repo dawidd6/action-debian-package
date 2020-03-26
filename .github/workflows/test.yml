@@ -32,7 +32,7 @@ jobs:
             ref: ubuntu/0.16.2-1
           - package: hello
             repo: https://git.launchpad.net/ubuntu/+source/hello
-            ref: import/2.10-1build3
+            ref: applied/2.10-1build3
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
