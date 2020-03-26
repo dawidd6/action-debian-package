@@ -7,6 +7,8 @@ const fs = require("fs")
 
 function getDistribution(distribution) {
     return distribution.replace("UNRELEASED", "unstable")
+                       .replace("-security", "")
+                       .replace("-backports", "")
 }
 
 async function getOS(distribution) {
