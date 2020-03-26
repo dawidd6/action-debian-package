@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Clone repo
         run: |
-          git clone ${{matrix.repo}} -b ${{matrix.ref}}
+          git clone ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
       - name: Test run
         uses: ./
         with:
