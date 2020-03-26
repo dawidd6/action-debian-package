@@ -13,6 +13,8 @@ jobs:
           - termshark
           - deber
           - lazygit
+          - tar
+          - dpatch
         include:
           - package: openssl
             repo: https://salsa.debian.org/debian/openssl.git
@@ -29,6 +31,12 @@ jobs:
           - package: lazygit
             repo: https://github.com/dawidd6/lazygit-debian.git
             ref: ubuntu/0.16.2-1
+          - package: tar
+            repo: https://git.launchpad.net/ubuntu/+source/tar
+            ref: ubuntu/focal
+          - package: dpatch
+            repo: https://git.launchpad.net/ubuntu/+source/dpatch
+            ref: ubuntu/bionic
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
