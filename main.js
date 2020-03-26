@@ -62,6 +62,7 @@ async function main() {
             "--name", container,
             "--volume", workspaceDirectory + ":" + workspaceDirectory,
             "--workdir", sourceDirectory,
+            "--env", "DEBIAN_FRONTEND=noninteractive",
             "--tty",
             image,
             "sleep", "inf"
