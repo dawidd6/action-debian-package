@@ -13,7 +13,6 @@ jobs:
           - termshark
           - deber
           - lazygit
-          - tar
           - busybox
         include:
           - package: openssl
@@ -31,9 +30,6 @@ jobs:
           - package: lazygit
             repo: https://github.com/dawidd6/lazygit-debian.git
             ref: ubuntu/0.16.2-1
-          - package: tar
-            repo: https://git.launchpad.net/ubuntu/+source/tar
-            ref: ubuntu/bionic-updates
           - package: busybox
             repo: https://git.launchpad.net/ubuntu/+source/busybox
             ref: ubuntu/focal
@@ -42,7 +38,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Clone repo
         run: |
-          git clone ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
+          git clone --depth=1 ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
       - name: Test run
         uses: ./
         with:
