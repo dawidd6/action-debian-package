@@ -8,15 +8,15 @@ jobs:
     strategy:
       matrix:
         package:
-          - curl
+          - openssl
           - lolcat
           - termshark
           - deber
           - lazygit
         include:
-          - package: curl
-            repo: https://salsa.debian.org/debian/curl.git
-            ref: stretch
+          - package: openssl
+            repo: https://salsa.debian.org/debian/openssl.git
+            ref: debian/openssl-1.1.1d-0+deb10u2
           - package: lolcat
             repo: https://salsa.debian.org/ruby-team/lolcat.git
             ref: debian/100.0.1-2
