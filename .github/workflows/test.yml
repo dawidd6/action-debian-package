@@ -5,17 +5,118 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - deber
+          - lazygit
+        include:
+          - package: deber
+            repo: dawidd6/deber
+            ref: v1.0.0
+          - package: lazygit
+            repo: dawidd6/lazygit-debian
+            ref: ubuntu/0.16.2-1
+    steps:
+      - name: Checkout package
+        uses: actions/checkout@v2
+        with:
+          repo: ${{matrix.repo}}
+          ref: ${{matrix.ref}}
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: action
+      - name: Test run
+        uses: ./action
+      - name: Check files
+        run: |
+          ls -lh ${{matrix.package}}_*.*
+  test-artifacts:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - deber
+          - lazygit
+        include:
+          - package: deber
+            repo: dawidd6/deber
+            ref: v1.0.0
+          - package: lazygit
+            repo: dawidd6/lazygit-debian
+            ref: ubuntu/0.16.2-1
+    steps:
+      - name: Checkout package
+        uses: actions/checkout@v2
+        with:
+          repo: ${{matrix.repo}}
+          ref: ${{matrix.ref}}
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: action
+      - name: Test run
+        uses: ./action
+        with:
+          artifacts_directory: artifacts
+      - name: Check files
+        run: |
+          ls -lh artifacts/${{matrix.package}}_*.*
+          ls -lh ${{matrix.package}}_*.* && false || true
+  test-source:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - lolcat
+          - termshark
+        include:
+          - package: lolcat
+            repo: https://salsa.debian.org/ruby-team/lolcat.git
+            ref: debian/100.0.1-2
+          - package: termshark
+            repo: https://salsa.debian.org/go-team/packages/termshark.git
+            ref: debian/2.0.3-1
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Clone repo
-        run: git clone https://salsa.debian.org/ruby-team/lolcat.git -b debian/100.0.1-2
+        run: |
+          git clone ${{matrix.repo}} -b ${{matrix.ref}}
       - name: Test run
         uses: ./
         with:
-          source_directory: lolcat
-          artifacts_directory: output
+          source_directory: ${{matrix.package}}
       - name: Check files
         run: |
-          ls -lh output
-          ls -lh output/lolcat_*.*
+          ls -lh ${{matrix.package}}_*.*
+  test-source-artifacts:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - lolcat
+          - termshark
+        include:
+          - package: lolcat
+            repo: https://salsa.debian.org/ruby-team/lolcat.git
+            ref: debian/100.0.1-2
+          - package: termshark
+            repo: https://salsa.debian.org/go-team/packages/termshark.git
+            ref: debian/2.0.3-1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Clone repo
+        run: |
+          git clone ${{matrix.repo}} -b ${{matrix.ref}}
+      - name: Test run
+        uses: ./
+        with:
+          source_directory: ${{matrix.package}}
+          artifacts_directory: artifacts
+      - name: Check files
+        run: |
+          ls -lh artifacts/${{matrix.package}}_*.*
+          ls -lh ${{matrix.package}}_*.* && false || true
