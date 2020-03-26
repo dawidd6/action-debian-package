@@ -23,12 +23,8 @@ jobs:
         with:
           repository: ${{matrix.repo}}
           ref: ${{matrix.ref}}
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          path: action
       - name: Test run
-        uses: ./action
+        uses: ${{github.repository}}@${{github.sha}}
       - name: Check files
         run: |
           ls -lh ${{matrix.package}}_*.*
@@ -52,12 +48,8 @@ jobs:
         with:
           repository: ${{matrix.repo}}
           ref: ${{matrix.ref}}
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          path: action
       - name: Test run
-        uses: ./action
+        uses: ${{github.repository}}@${{github.sha}}
         with:
           artifacts_directory: artifacts
       - name: Check files
