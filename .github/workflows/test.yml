@@ -14,7 +14,7 @@ jobs:
           - deber
           - lazygit
           - tar
-          - dpatch
+          - busybox
         include:
           - package: openssl
             repo: https://salsa.debian.org/debian/openssl.git
@@ -33,10 +33,10 @@ jobs:
             ref: ubuntu/0.16.2-1
           - package: tar
             repo: https://git.launchpad.net/ubuntu/+source/tar
+            ref: ubuntu/bionic-updates
+          - package: busybox
+            repo: https://git.launchpad.net/ubuntu/+source/busybox
             ref: ubuntu/focal
-          - package: dpatch
-            repo: https://git.launchpad.net/ubuntu/+source/dpatch
-            ref: ubuntu/bionic
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
