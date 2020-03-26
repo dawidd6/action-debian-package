@@ -17,6 +17,11 @@ distribution="$(dpkg-parsechangelog -S Distribution | sed 's/UNRELEASED/unstable
 container="$package-$version"
 image="$os:$distribution"
 
+cat <<EOF
+directory_runner=$directory_runner
+directory_container=$directory_container
+EOF
+
 docker create \
     --tty \
     --name "$container" \
@@ -28,9 +33,14 @@ docker create \
 docker start \
     "$container"
 
-echo
-docker exec $container ls -lha
-echo
+echo -----------
+pwd
+ls -lh
+echo -----------
+echo -----------
+docker exec "$container" pwd
+docker exec "$container" ls -lh
+echo -----------
 exit
 
 docker exec \
