@@ -13,4 +13,9 @@ jobs:
       - name: Test run
         uses: ./
         with:
-          directory: lolcat
+          source_directory: lolcat
+          artifacts_directory: output
+      - name: Check files
+        run: |
+          ls -lh output
+          ls -lh output/lolcat_*.*

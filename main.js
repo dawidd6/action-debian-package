@@ -1,30 +1,32 @@
-const path = require("path")
 const core = require("@actions/core")
 const exec = require("@actions/exec")
 const firstline = require("firstline")
+const path = require("path")
+const fs = require("fs")
 
 async function main() {
     try {
-        const directory = core.getInput("directory", { required: true })
+        const sourceDirectory = core.getInput("source_directory", { required: true })
+        const artifactsDirectory = core.getInput("artifacts_directory", { required: true })
         const os = core.getInput("os", { required: true })
 
-        const directoryRunner = path.join(process.cwd(), directory)
-        const directoryContainer = "/build/source"
-
-        const file = path.join(directoryRunner, "debian/changelog")
+        const workspaceDirectory = process.cwd()
+        const file = path.join(workspaceDirectory, sourceDirectory, "debian/changelog")
         const changelog = await firstline(file)
-        const regex = /^(?<package>.+) \((?<version>.+)-(?<revision>.+)\) (?<distribution>.+); (?<options>.+)$/
+        const regex = /^(?<package>.+) \((?<version>[^-]+)-?(?<revision>[^-]+)?\) (?<distribution>.+); (?<options>.+)$/
         const match = changelog.match(regex)
         const { package, version, revision, distribution } = match.groups
-        const container = package + "_" + version + "-" + revision
+        const container = package + "_" + version
         const image = os + ":" + distribution.replace("UNRELEASED", "unstable")
+
+        fs.mkdirSync(artifactsDirectory, { recursive: true })
 
         core.startGroup("Create container")
         await exec.exec("docker", [
             "create",
             "--name", container,
-            "--volume", directoryRunner + ":" + directoryContainer,
-            "--workdir", directoryContainer,
+            "--volume", workspaceDirectory + ":" + workspaceDirectory,
+            "--workdir", path.join(workspaceDirectory, sourceDirectory),
             "--tty",
             image,
             "sleep", "inf"
@@ -38,18 +40,20 @@ async function main() {
         ])
         core.endGroup()
 
-        core.startGroup("Create tarball")
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "tar",
-            "--exclude-vcs",
-            "--exclude", "./debian",
-            "--transform", `s/^\./${package}-${version}/`,
-            "-cvzf", `../${package}_${version}.orig.tar.gz`,
-            "./"
-        ])
-        core.endGroup()
+        if (revision) {
+            core.startGroup("Create tarball")
+            await exec.exec("docker", [
+                "exec",
+                container,
+                "tar",
+                "--exclude-vcs",
+                "--exclude", "./debian",
+                "--transform", `s/^\./${package}-${version}/`,
+                "-cvzf", `../${package}_${version}.orig.tar.gz`,
+                "./"
+            ])
+            core.endGroup()
+        }
 
         core.startGroup("Update packages list")
         await exec.exec("docker", [
@@ -71,7 +75,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "build-dep", "-y", directoryContainer
+            "apt-get", "build-dep", "-y", "./"
         ])
         core.endGroup()
 
@@ -90,9 +94,10 @@ async function main() {
             "find",
             "..",
             "-maxdepth", "1",
+            "-name", `${package}_${version}*.*`,
             "-type", "f",
             "-print",
-            "-exec", "cp", "{}", ".", ";"
+            "-exec", "cp", "{}", artifactsDirectory, ";"
         ])
         core.endGroup()
     } catch (error) {
