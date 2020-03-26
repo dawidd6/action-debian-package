@@ -13,6 +13,7 @@ jobs:
           - termshark
           - deber
           - lazygit
+          - bc
         include:
           - package: openssl
             repo: https://salsa.debian.org/debian/openssl.git
@@ -29,6 +30,9 @@ jobs:
           - package: lazygit
             repo: https://github.com/dawidd6/lazygit-debian.git
             ref: ubuntu/0.16.2-1
+          - package: bc
+            repo: https://git.launchpad.net/ubuntu/+source/bc
+            ref: applied/1.07.1-2build1
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
