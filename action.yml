@@ -12,10 +12,6 @@ inputs:
     description: Directory where build artifacts will be placed, relative to workspace
     required: false
     default: ./
-  os:
-    description: '"ubuntu" or "debian"'
-    required: false
-    default: debian
 runs:
   using: node12
   main: main.js

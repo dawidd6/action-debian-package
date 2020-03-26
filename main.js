@@ -1,23 +1,41 @@
 const core = require("@actions/core")
 const exec = require("@actions/exec")
 const firstline = require("firstline")
+const hub = require("docker-hub-utils")
 const path = require("path")
 const fs = require("fs")
 
+function getDistribution(distribution) {
+    return distribution.replace("UNRELEASED", "unstable")
+}
+
+async function getOS(distribution) {
+    for (const os of ["debian", "ubuntu"]) {
+        const tags = await hub.queryTags({ user: "library", name: os })
+        if (tags.find(tag => tag.name == distribution)) {
+            return os
+        }
+    }
+}
+
 async function main() {
     try {
-        const sourceDirectory = core.getInput("source_directory", { required: true })
-        const artifactsDirectory = core.getInput("artifacts_directory", { required: true })
-        const os = core.getInput("os", { required: true })
+        const sourceRelativeDirectory = core.getInput("source_directory")
+        const artifactsRelativeDirectory = core.getInput("artifacts_directory")
 
         const workspaceDirectory = process.cwd()
-        const file = path.join(workspaceDirectory, sourceDirectory, "debian/changelog")
+        const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
+        const buildDirectory = path.dirname(sourceDirectory)
+        const artifactsDirectory = path.join(workspaceDirectory, artifactsRelativeDirectory)
+
+        const file = path.join(sourceDirectory, "debian/changelog")
         const changelog = await firstline(file)
-        const regex = /^(?<package>.+) \((?<version>[^-]+)-?(?<revision>[^-]+)?\) (?<distribution>.+); (?<options>.+)$/
+        const regex = /^(?<package>.+) \((?<version>[^-]+)-?(?<revision>[^-]+)?\) (?<distribution>.+);/
         const match = changelog.match(regex)
         const { package, version, revision, distribution } = match.groups
+        const os = await getOS(getDistribution(distribution))
         const container = package + "_" + version
-        const image = os + ":" + distribution.replace("UNRELEASED", "unstable")
+        const image = os + ":" + getDistribution(distribution)
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
 
@@ -25,8 +43,8 @@ async function main() {
         await exec.exec("docker", [
             "create",
             "--name", container,
-            "--volume", workspaceDirectory + ":" + workspaceDirectory,
-            "--workdir", path.join(workspaceDirectory, sourceDirectory),
+            "--volume", sourceDirectory + ":" + sourceDirectory,
+            "--workdir", sourceDirectory,
             "--tty",
             image,
             "sleep", "inf"
@@ -49,7 +67,7 @@ async function main() {
                 "--exclude-vcs",
                 "--exclude", "./debian",
                 "--transform", `s/^\./${package}-${version}/`,
-                "-cvzf", `../${package}_${version}.orig.tar.gz`,
+                "-cvzf", `${buildDirectory}/${package}_${version}.orig.tar.gz`,
                 "./"
             ])
             core.endGroup()
@@ -75,7 +93,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "build-dep", "-y", "./"
+            "apt-get", "build-dep", "-y", sourceDirectory
         ])
         core.endGroup()
 
@@ -92,7 +110,7 @@ async function main() {
             "exec",
             container,
             "find",
-            "..",
+            buildDirectory,
             "-maxdepth", "1",
             "-name", `${package}_${version}*.*`,
             "-type", "f",

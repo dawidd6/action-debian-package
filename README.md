@@ -10,5 +10,4 @@ An action that builds a Debian package from source.
   with:
     source_directory: lolcat # optional, relative to workspace directory
     artifacts_directory: output # optional, relative to workspace directory
-    os: debian # or ubuntu, defaults to debian
 ```
