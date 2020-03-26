@@ -21,7 +21,7 @@ jobs:
       - name: Checkout package
         uses: actions/checkout@v2
         with:
-          repo: ${{matrix.repo}}
+          repository: ${{matrix.repo}}
           ref: ${{matrix.ref}}
       - name: Checkout code
         uses: actions/checkout@v2
@@ -42,15 +42,15 @@ jobs:
         include:
           - package: deber
             repo: dawidd6/deber
-            ref: v1.0.0
+            ref: refs/tags/v1.0.0
           - package: lazygit
             repo: dawidd6/lazygit-debian
-            ref: ubuntu/0.16.2-1
+            ref: refs/tags/ubuntu/0.16.2-1
     steps:
       - name: Checkout package
         uses: actions/checkout@v2
         with:
-          repo: ${{matrix.repo}}
+          repository: ${{matrix.repo}}
           ref: ${{matrix.ref}}
       - name: Checkout code
         uses: actions/checkout@v2
