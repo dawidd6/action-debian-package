@@ -13,7 +13,7 @@ jobs:
           - termshark
           - deber
           - lazygit
-          - busybox
+          - hello
         include:
           - package: openssl
             repo: https://salsa.debian.org/debian/openssl.git
@@ -30,8 +30,8 @@ jobs:
           - package: lazygit
             repo: https://github.com/dawidd6/lazygit-debian.git
             ref: ubuntu/0.16.2-1
-          - package: busybox
-            repo: https://git.launchpad.net/ubuntu/+source/busybox
+          - package: hello
+            repo: https://git.launchpad.net/ubuntu/+source/hello
             ref: ubuntu/focal
     steps:
       - name: Checkout code
