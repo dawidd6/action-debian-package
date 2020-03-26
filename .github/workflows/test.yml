@@ -8,95 +8,27 @@ jobs:
     strategy:
       matrix:
         package:
-          - deber
-          - lazygit
-        include:
-          - package: deber
-            repo: dawidd6/deber
-            ref: refs/tags/v1.0.0
-          - package: lazygit
-            repo: dawidd6/lazygit-debian
-            ref: refs/tags/ubuntu/0.16.2-1
-    steps:
-      - name: Checkout package
-        uses: actions/checkout@v2
-        with:
-          repository: ${{matrix.repo}}
-          ref: ${{matrix.ref}}
-      - name: Test run
-        uses: ${{github.repository}}@${{github.sha}}
-      - name: Check files
-        run: |
-          ls -lh ${{matrix.package}}_*.*
-  test-artifacts:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package:
-          - deber
-          - lazygit
-        include:
-          - package: deber
-            repo: dawidd6/deber
-            ref: refs/tags/v1.0.0
-          - package: lazygit
-            repo: dawidd6/lazygit-debian
-            ref: refs/tags/ubuntu/0.16.2-1
-    steps:
-      - name: Checkout package
-        uses: actions/checkout@v2
-        with:
-          repository: ${{matrix.repo}}
-          ref: ${{matrix.ref}}
-      - name: Test run
-        uses: ${{github.repository}}@${{github.sha}}
-        with:
-          artifacts_directory: artifacts
-      - name: Check files
-        run: |
-          ls -lh artifacts/${{matrix.package}}_*.*
-          ls -lh ${{matrix.package}}_*.* && false || true
-  test-source:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package:
+          - curl
           - lolcat
           - termshark
+          - deber
+          - lazygit
         include:
+          - package: curl
+            repo: https://salsa.debian.org/debian/curl.git
+            ref: stretch
           - package: lolcat
             repo: https://salsa.debian.org/ruby-team/lolcat.git
             ref: debian/100.0.1-2
           - package: termshark
             repo: https://salsa.debian.org/go-team/packages/termshark.git
             ref: debian/2.0.3-1
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Clone repo
-        run: |
-          git clone ${{matrix.repo}} -b ${{matrix.ref}}
-      - name: Test run
-        uses: ./
-        with:
-          source_directory: ${{matrix.package}}
-      - name: Check files
-        run: |
-          ls -lh ${{matrix.package}}_*.*
-  test-source-artifacts:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package:
-          - lolcat
-          - termshark
-        include:
-          - package: lolcat
-            repo: https://salsa.debian.org/ruby-team/lolcat.git
-            ref: debian/100.0.1-2
-          - package: termshark
-            repo: https://salsa.debian.org/go-team/packages/termshark.git
-            ref: debian/2.0.3-1
+          - package: deber
+            repo: https://github.com/dawidd6/deber.git
+            ref: v1.0.0
+          - package: lazygit
+            repo: https://github.com/dawidd6/lazygit-debian.git
+            ref: ubuntu/0.16.2-1
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
