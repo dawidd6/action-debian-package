@@ -104,7 +104,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "-y", "dpkg-dev", "debhelper"
+            "apt-get", "install", "-yq", "dpkg-dev", "debhelper"
         ])
         core.endGroup()
 
@@ -112,7 +112,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "build-dep", "-y", sourceDirectory
+            "apt-get", "build-dep", "-yq", sourceDirectory
         ])
         core.endGroup()
 
