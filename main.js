@@ -39,6 +39,23 @@ async function main() {
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
 
+        core.startGroup("Print details")
+        const details = {
+            package: package,
+            version: version,
+            revision: revision,
+            distribution: getDistribution(distribution),
+            os: os,
+            container: container,
+            image: image,
+            workspaceDirectory: workspaceDirectory,
+            sourceDirectory: sourceDirectory,
+            buildDirectory: buildDirectory,
+            artifactsDirectory: artifactsDirectory
+        }
+        console.log(details)
+        core.endGroup()
+
         core.startGroup("Create container")
         await exec.exec("docker", [
             "create",
