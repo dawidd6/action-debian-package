@@ -5,7 +5,7 @@ set -eu
 directory="${INPUT_DIRECTORY:-}"
 os="${INPUT_OS:-"debian"}"
 
-directory_runner="$RUNNER_WORKSPACE/$directory"
+directory_runner="$RUNNER_WORKSPACE/$(echo $GITHUB_REPOSITORY | cut -d/ -f2)/$directory"
 directory_container="$GITHUB_WORKSPACE/$directory"
 
 cd "$directory_container"
