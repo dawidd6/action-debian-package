@@ -87,12 +87,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "ls", "-lh", ".."
-        ])
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "cp", `../${package}_${version}*.*`, "."
+            "find", "..", "-type", "f", "-exec", "cp", "{}", ".", "+"
         ])
         core.endGroup()
     } catch (error) {
