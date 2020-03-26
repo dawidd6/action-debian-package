@@ -82,6 +82,14 @@ async function main() {
             "dpkg-buildpackage", "-tc"
         ])
         core.endGroup()
+
+        core.startGroup("Copy artifacts")
+        await exec.exec("docker", [
+            "exec",
+            container,
+            "cp", `../${package}_${version}*.*`, "."
+        ])
+        core.endGroup()
     } catch (error) {
         core.setFailed(error.message)
     }
