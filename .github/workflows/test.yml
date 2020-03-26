@@ -8,16 +8,16 @@ jobs:
     strategy:
       matrix:
         package:
-          - openssl
+          - ncurses
           - lolcat
           - termshark
           - deber
           - lazygit
           - bc
         include:
-          - package: openssl
-            repo: https://salsa.debian.org/debian/openssl.git
-            ref: debian/openssl-1.1.1d-0+deb10u2
+          - package: ncurses
+            repo: https://salsa.debian.org/debian/ncurses.git
+            ref: debian/6.1+20181013-2+deb10u2
           - package: lolcat
             repo: https://salsa.debian.org/ruby-team/lolcat.git
             ref: debian/100.0.1-2
