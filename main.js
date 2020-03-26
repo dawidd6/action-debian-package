@@ -43,7 +43,7 @@ async function main() {
         await exec.exec("docker", [
             "create",
             "--name", container,
-            "--volume", sourceDirectory + ":" + sourceDirectory,
+            "--volume", workspaceDirectory + ":" + workspaceDirectory,
             "--workdir", sourceDirectory,
             "--tty",
             image,
@@ -66,9 +66,9 @@ async function main() {
                 "tar",
                 "--exclude-vcs",
                 "--exclude", "./debian",
-                "--transform", `s/^\./${package}-${version}/`,
+                "--transform", `s/^${sourceDirectory}/${package}-${version}/`,
                 "-cvzf", `${buildDirectory}/${package}_${version}.orig.tar.gz`,
-                "./"
+                sourceDirectory
             ])
             core.endGroup()
         }
@@ -105,7 +105,7 @@ async function main() {
         ])
         core.endGroup()
 
-        core.startGroup("Copy artifacts")
+        core.startGroup("Move artifacts")
         await exec.exec("docker", [
             "exec",
             container,
@@ -115,7 +115,7 @@ async function main() {
             "-name", `${package}_${version}*.*`,
             "-type", "f",
             "-print",
-            "-exec", "cp", "{}", artifactsDirectory, ";"
+            "-exec", "mv", "{}", artifactsDirectory, ";"
         ])
         core.endGroup()
     } catch (error) {
