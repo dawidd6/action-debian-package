@@ -3,7 +3,7 @@
   "dependencies": {
     "@actions/core": "^1.2.3",
     "@actions/exec": "^1.0.3",
-    "docker-hub-utils": "^1.10.29",
+    "docker-hub-utils": "^1.10.31",
     "firstline": "^2.0.2"
   }
 }
