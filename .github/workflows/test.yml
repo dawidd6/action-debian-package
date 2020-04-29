@@ -30,9 +30,9 @@ jobs:
           - package: lazygit
             repo: https://github.com/dawidd6/lazygit-debian.git
             ref: ubuntu/0.16.2-1
-          - package: bc
-            repo: https://git.launchpad.net/ubuntu/+source/bc
-            ref: ubuntu/focal
+          - package: busybox
+            repo: https://git.launchpad.net/ubuntu/+source/busybox
+            ref: applied/1%1.30.1-4ubuntu6
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
