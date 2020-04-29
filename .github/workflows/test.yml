@@ -13,7 +13,7 @@ jobs:
           - termshark
           - deber
           - lazygit
-          - bc
+          - busybox
         include:
           - package: ncurses
             repo: https://salsa.debian.org/debian/ncurses.git
