@@ -13,7 +13,7 @@ jobs:
           - termshark
           - deber
           - lazygit
-          - busybox
+          - netcat-openbsd
         include:
           - package: ncurses
             repo: https://salsa.debian.org/debian/ncurses.git
@@ -30,9 +30,9 @@ jobs:
           - package: lazygit
             repo: https://github.com/dawidd6/lazygit-debian.git
             ref: ubuntu/0.16.2-1
-          - package: busybox
-            repo: https://git.launchpad.net/ubuntu/+source/busybox
-            ref: import/1%1.30.1-4ubuntu6
+          - package: netcat-openbsd
+            repo: https://git.launchpad.net/ubuntu/+source/netcat-openbsd
+            ref: import/1.206-1ubuntu1
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
