@@ -7,13 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package:
-          - ncurses
-          - lolcat
-          - termshark
-          - deber
-          - lazygit
-          - netcat-openbsd
         include:
           - package: ncurses
             repo: https://salsa.debian.org/debian/ncurses.git
