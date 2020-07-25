@@ -7,8 +7,8 @@ const fs = require("fs")
 
 function getDistribution(distribution) {
     return distribution.replace("UNRELEASED", "unstable")
-                       .replace("-security", "")
-                       .replace("-backports", "")
+        .replace("-security", "")
+        .replace("-backports", "")
 }
 
 async function getOS(distribution) {
@@ -24,6 +24,7 @@ async function main() {
     try {
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
+        const additionalRepositories = core.getInput("additional_repositories")
 
         const workspaceDirectory = process.cwd()
         const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
@@ -94,6 +95,24 @@ async function main() {
                 "-C", sourceDirectory,
                 "./"
             ])
+            core.endGroup()
+        }
+
+        if (additionalRepositories) {
+            core.startGroup("Add repositories")
+            for (const repo of additionalRepositories.split("\n")) {
+                if (repo.startsWith("deb ")) {
+                    repo.replace(searchValue, replaceValue)
+                }
+
+                await exec.exec("docker", [
+                    "exec",
+                    container,
+                    "sh",
+                    "-c",
+                    `echo ${repo} > /etc/apt/sources.list`
+                ])
+            }
             core.endGroup()
         }
 
