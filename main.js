@@ -22,8 +22,8 @@ async function getOS(distribution) {
 
 async function main() {
     try {
-        const sourceRelativeDirectory = core.getInput("source_directory")
-        const artifactsRelativeDirectory = core.getInput("artifacts_directory")
+        const sourceRelativeDirectory = core.getInput("source_directory") || "./"
+        const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
 
         const workspaceDirectory = process.cwd()
         const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
