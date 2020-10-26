@@ -120,7 +120,12 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts", "equivs", "libpython3.7-minimal:" + targetArchitecture
+            "apt-get", "install", "--no-install-recommends", "-y",
+            // General packaging stuff
+            "dpkg-dev",
+            "debhelper",
+            // Used by pybuild
+            "libpython3.7-minimal:" + targetArchitecture
         ])
         core.endGroup()
 
@@ -128,7 +133,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "mk-build-deps", "-ir", "-t", "apt-get -o Debug::pkgProblemResolver=yes -y --no-install-recommends"
+            "apt-get", "build-dep", "-y", sourceDirectory
         ])
         core.endGroup()
 
@@ -136,7 +141,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg-buildpackage", "--no-sign", "-d", "-a" + targetArchitecture
+            "dpkg-buildpackage", "--no-sign", "-a" + targetArchitecture
         ])
         core.endGroup()
 
