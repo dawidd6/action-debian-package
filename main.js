@@ -98,6 +98,14 @@ async function main() {
             core.endGroup()
         }
 
+        core.startGroup("Add armhf architecture")
+        await exec.exec("docker", [
+            "exec",
+            container,
+            "dpkg", "--add-architecture", "armhf"
+        ])
+        core.endGroup()
+
         core.startGroup("Update packages list")
         await exec.exec("docker", [
             "exec",
