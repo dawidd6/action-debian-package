@@ -121,9 +121,11 @@ async function main() {
             "exec",
             container,
             "apt-get", "install", "--no-install-recommends", "-y",
+
             // General packaging stuff
             "dpkg-dev",
             "debhelper",
+
             // Used by pybuild
             "libpython3.7-minimal:" + targetArchitecture
         ])
@@ -141,7 +143,18 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg-buildpackage", "--no-sign", "-a" + targetArchitecture
+            "dpkg-buildpackage",
+
+            // Don't sign for now
+            "--no-sign",
+
+            // Ignore build dependencies - we have already installed them
+            //
+            // Seems to not recognise if python3-all and python3-gpiozero are installed
+            // and may affect other packages in the same way - but THEY ARE THERE
+            "-d",
+
+            "-a" + targetArchitecture
         ])
         core.endGroup()
 
