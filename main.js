@@ -110,7 +110,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts", "equivs"
+            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts", "equivs", "libpython3.7-minimal:armhf"
         ])
         core.endGroup()
 
@@ -126,8 +126,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            // "dpkg-buildpackage", "--no-sign", "-d", "-aarmhf"
-            "dpkg-buildpackage", "--no-sign", "-d", "-aamd64"
+            "dpkg-buildpackage", "--no-sign", "-d", "-aarmhf"
         ])
         core.endGroup()
 
