@@ -65,6 +65,7 @@ async function main() {
             "--name", container,
             "--volume", workspaceDirectory + ":" + workspaceDirectory,
             "--workdir", sourceDirectory,
+            "--env", "DH_VERBOSE=1",
             "--env", "DEBIAN_FRONTEND=noninteractive",
             "--env", "DPKG_COLORS=always",
             "--env", "FORCE_UNSAFE_CONFIGURE=1",
