@@ -12,6 +12,10 @@ inputs:
     description: Directory where build artifacts will be placed, relative to workspace
     required: false
     default: ./
+  target_architecture:
+    description: Target architecture of Debian package to build
+    required: false
+    default: "armhf"
 runs:
   using: node12
   main: main.js
