@@ -109,7 +109,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts"
+            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts", "equivs"
         ])
         core.endGroup()
 
