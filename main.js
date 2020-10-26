@@ -22,6 +22,8 @@ async function getOS(distribution) {
 
 async function main() {
     try {
+        const targetArchitecture = core.getInput("target_architecture") || "armhf"
+
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
 
@@ -98,6 +100,14 @@ async function main() {
             core.endGroup()
         }
 
+        core.startGroup("Add target architecture")
+        await exec.exec("docker", [
+            "exec",
+            container,
+            "dpkg", "--add-architecture", targetArchitecture
+        ])
+        core.endGroup()
+
         core.startGroup("Update packages list")
         await exec.exec("docker", [
             "exec",
@@ -110,7 +120,12 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts", "equivs"
+            "apt-get", "install", "--no-install-recommends", "-y",
+            // General packaging stuff
+            "dpkg-dev",
+            "debhelper",
+            // Used by pybuild
+            "libpython3.7-minimal:" + targetArchitecture
         ])
         core.endGroup()
 
@@ -118,7 +133,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "mk-build-deps", "-ir", "-t", "apt-get -o Debug::pkgProblemResolver=yes -y --no-install-recommends"
+            "apt-get", "build-dep", "-y", sourceDirectory
         ])
         core.endGroup()
 
@@ -126,7 +141,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg-buildpackage", "--no-sign", "-d", "-aarmhf"
+            "dpkg-buildpackage", "--no-sign", "-a" + targetArchitecture
         ])
         core.endGroup()
 
@@ -137,7 +152,7 @@ async function main() {
             "find",
             buildDirectory,
             "-maxdepth", "1",
-            "-name", `${package}*${version}*.*`,
+            "-name", `*${version}*.*`,
             "-type", "f",
             "-print",
             "-exec", "mv", "{}", artifactsDirectory, ";"
