@@ -109,7 +109,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "-yq", "dpkg-dev", "debhelper"
+            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts"
         ])
         core.endGroup()
 
@@ -117,7 +117,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "build-dep", "-yq", sourceDirectory
+            "mk-build-deps", "-ir", "-t", "apt-get -o Debug::pkgProblemResolver=yes -y --no-install-recommends"
         ])
         core.endGroup()
 
@@ -125,7 +125,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg-buildpackage", "-tc"
+            "dpkg-buildpackage", "--no-sign", "-d", "-aarmhf"
         ])
         core.endGroup()
 
