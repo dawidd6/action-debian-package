@@ -22,6 +22,8 @@ async function getOS(distribution) {
 
 async function main() {
     try {
+        const targetArchitecture = core.getInput("target_architecture") || "armhf"
+
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
 
@@ -98,11 +100,11 @@ async function main() {
             core.endGroup()
         }
 
-        core.startGroup("Add armhf architecture")
+        core.startGroup("Add target architecture")
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg", "--add-architecture", "armhf"
+            "dpkg", "--add-architecture", targetArchitecture
         ])
         core.endGroup()
 
@@ -118,7 +120,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts", "equivs", "libpython3.7-minimal:armhf"
+            "apt-get", "install", "--no-install-recommends", "-y", "dpkg-dev", "debhelper", "devscripts", "equivs", "libpython3.7-minimal:" + targetArchitecture
         ])
         core.endGroup()
 
@@ -134,7 +136,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg-buildpackage", "--no-sign", "-d", "-aarmhf"
+            "dpkg-buildpackage", "--no-sign", "-d", "-a" + targetArchitecture
         ])
         core.endGroup()
 
