@@ -22,10 +22,21 @@ async function getOS(distribution) {
 
 async function main() {
     try {
-        const targetArchitecture = core.getInput("target_architecture") || "armhf"
+        const targetArchitectures = core.getInput("target_architectures") || []
 
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
+
+        const defaultDpkgBuildPackageOpts = [
+            // Don't sign for now
+            "--no-sign",
+
+            // Don't worry about build dependencies - we have already installed them
+            // (Seems to not recognize that some packages are installed)
+            "-d"
+        ]
+        const dpkgBuildPackageOpts = core.getInput("dpkg_buildpackage_opts") || defaultDpkgBuildPackageOpts
+        const lintianOpts = core.getInput("lintian_opts") || []
 
         const workspaceDirectory = process.cwd()
         const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
@@ -42,6 +53,15 @@ async function main() {
         const image = os + ":" + getDistribution(distribution)
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
+
+        function runDockerExecStep(title, commandParams) {
+            core.startGroup(title)
+            await exec.exec("docker", [
+                "exec",
+                container
+            ].concat(commandParams))
+            core.endGroup()
+        }
 
         core.startGroup("Print details")
         const details = {
@@ -85,10 +105,7 @@ async function main() {
         core.endGroup()
 
         if (revision) {
-            core.startGroup("Create tarball")
-            await exec.exec("docker", [
-                "exec",
-                container,
+            runDockerExecStep("Create tarball", [
                 "tar",
                 "--exclude-vcs",
                 "--exclude", "./debian",
@@ -97,80 +114,71 @@ async function main() {
                 "-C", sourceDirectory,
                 "./"
             ])
-            core.endGroup()
         }
 
-        core.startGroup("Add target architecture")
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "dpkg", "--add-architecture", targetArchitecture
-        ])
-        core.endGroup()
+        if (targetArchitectures.length() != 0) {
+            for (targetArchitecture in targetArchitectures) {
+                runDockerExecStep(
+                    "Add target architecture: " + targetArchitecture,
+                    ["dpkg", "--add-architecture", targetArchitecture]
+                )
+            }
+        }
 
-        core.startGroup("Update packages list")
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "apt-get", "update"
-        ])
-        core.endGroup()
+        runDockerExecStep(
+            "Update packages list",
+            ["apt-get", "update"]
+        )
 
-        core.startGroup("Install development packages")
-        await exec.exec("docker", [
-            "exec",
-            container,
+        args = [
             "apt-get", "install", "--no-install-recommends", "-y",
-
             // General packaging stuff
             "dpkg-dev",
             "debhelper",
+            "lintian"
+        ]
 
-            // Used by pybuild
-            "libpython3.7-minimal:" + targetArchitecture
-        ])
-        core.endGroup()
+        // Used by pybuild
+        for (targetArchitecture in targetArchitectures) {
+            args.concat("libpython3.7-minimal:" + targetArchitecture)
+        }
+        runDockerExecStep(
+            "Install development packages",
+            args
+        )
 
-        core.startGroup("Install build dependencies")
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "apt-get", "build-dep", "-y", sourceDirectory
-        ])
-        core.endGroup()
+        runDockerExecStep(
+            "Install build dependencies",
+            ["apt-get", "build-dep", "-y", sourceDirectory]
+        )
 
-        core.startGroup("Build package")
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "dpkg-buildpackage",
+        for (targetArchitecture in targetArchitectures) {
+            runDockerExecStep(
+                "Build package",
+                [
+                    "dpkg-buildpackage",
+                    "-a" + targetArchitecture
+                ].concat(dpkgBuildPackageOpts)
+            )
+        }
 
-            // Don't sign for now
-            "--no-sign",
+        runDockerExecStep(
+            "Run static analysis",
+            ["lintian"].concat(lintianOpts)
+        )
 
-            // Ignore build dependencies - we have already installed them
-            //
-            // Seems to not recognise if python3-all and python3-gpiozero are installed
-            // and may affect other packages in the same way - but THEY ARE THERE
-            "-d",
-
-            "-a" + targetArchitecture
-        ])
-        core.endGroup()
-
-        core.startGroup("Move artifacts")
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "find",
-            buildDirectory,
-            "-maxdepth", "1",
-            "-name", `*${version}*.*`,
-            "-type", "f",
-            "-print",
-            "-exec", "mv", "{}", artifactsDirectory, ";"
-        ])
-        core.endGroup()
+        runDockerExecStep(
+            "Move artifacts",
+            [
+                "find",
+                buildDirectory,
+                "-maxdepth", "1",
+                "-name", `*${version}*.*`,
+                "-type", "f",
+                "-print",
+                "-exec", "mv", "{}", artifactsDirectory, ";"
+            ]
+        )
     } catch (error) {
         core.setFailed(error.message)
     }

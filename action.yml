@@ -12,10 +12,19 @@ inputs:
     description: Directory where build artifacts will be placed, relative to workspace
     required: false
     default: ./
-  target_architecture:
+  target_architectures:
     description: Target architecture of Debian package to build
     required: false
-    default: "armhf"
+    default: []
+  dpkg_buildpackage_opts:
+    description: Options list provided to 'dpkg-buildpackage' as command line parameters (note that '-a' is automatically provided for target architectures specified by target_architectures)
+    required: false
+    default: [ "--no-sign", "-d" ]
+  lintian_opts:
+    description: Options list provided to 'lintian' as command line parameters
+    required: false
+    default: []
+
 runs:
   using: node12
   main: main.js
