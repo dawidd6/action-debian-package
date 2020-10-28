@@ -165,12 +165,13 @@ async function main() {
                     "-a" + targetArchitecture
                 ].concat(dpkgBuildPackageOpts)
             )
+                runDockerExecStep(
+                "Run static analysis",
+                ["lintian"]
+                    .concat(lintianOpts)
+                    .concat("*" + targetArchitecture + ".changes")
+            )
         })
-
-        runDockerExecStep(
-            "Run static analysis",
-            ["lintian"].concat(lintianOpts)
-        )
 
         runDockerExecStep(
             "Move artifacts",
