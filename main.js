@@ -154,11 +154,11 @@ async function main() {
             ]
 
             // Used by pybuild
-            for (i in targetArchitectures) {
-                devPackages.concat("libpython3.7-minimal:" + targetArchitectures[i])
-            }
+            const libPythonPackages = targetArchitectures.map(targetArchitecture => {
+                return "libpython3.7-minimal:" + targetArchitecture
+            })
 
-            return devPackages
+            return devPackages.concat(libPythonPackages)
         }
         core.startGroup("Install development packages")
         await exec.exec("docker", ["exec", container].concat(
