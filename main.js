@@ -54,7 +54,7 @@ async function main() {
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
 
-        function runDockerExecStep(title, commandParams) {
+        async function runDockerExecStep(title, commandParams) {
             core.startGroup(title)
             await exec.exec("docker", [
                 "exec",
