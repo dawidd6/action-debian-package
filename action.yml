@@ -7,23 +7,23 @@ inputs:
   source_directory:
     description: Directory where Debian sources are, relative to workspace
     required: false
-    default: ./
+    default: "./"
   artifacts_directory:
     description: Directory where build artifacts will be placed, relative to workspace
     required: false
-    default: ./
+    default: "./"
   target_architectures:
     description: Target architecture of Debian package to build
     required: false
-    default: []
+    default: ""
   dpkg_buildpackage_opts:
     description: Options list provided to 'dpkg-buildpackage' as command line parameters (note that '-a' is automatically provided for target architectures specified by target_architectures)
     required: false
-    default: [ "--no-sign", "-d" ]
+    default: "--no-sign, -d"
   lintian_opts:
     description: Options list provided to 'lintian' as command line parameters
     required: false
-    default: []
+    default: ""
 
 runs:
   using: node12

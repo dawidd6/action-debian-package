@@ -35,7 +35,7 @@ async function main() {
             // (Seems to not recognize that some packages are installed)
             "-d"
         ]
-        const dpkgBuildPackageOpts = core.getInput("dpkg_buildpackage_opts") || defaultDpkgBuildPackageOpts
+        const dpkgBuildPackageOpts = core.getInput("dpkg_buildpackage_opts").replaceAll(" ", "").split(",") || defaultDpkgBuildPackageOpts
         const lintianOpts = core.getInput("lintian_opts") || []
 
         const workspaceDirectory = process.cwd()
