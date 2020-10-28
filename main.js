@@ -154,7 +154,7 @@ async function main() {
 
         for (targetArchitecture in targetArchitectures) {
             runDockerExecStep(
-                "Build package",
+                "Build package for architecture: " + targetArchitecture,
                 [
                     "dpkg-buildpackage",
                     "-a" + targetArchitecture
