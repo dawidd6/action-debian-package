@@ -22,7 +22,7 @@ async function getOS(distribution) {
 
 async function main() {
     try {
-        const targetArchitectures = core.getInput("target_architectures").replaceAll(" ", "").split(",") || []
+        const targetArchitectures = core.getInput("target_architectures").replace(" ", "").split(",") || []
 
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
@@ -35,7 +35,7 @@ async function main() {
             // (Seems to not recognize that some packages are installed)
             "-d"
         ]
-        const dpkgBuildPackageOpts = core.getInput("dpkg_buildpackage_opts").replaceAll(" ", "").split(",") || defaultDpkgBuildPackageOpts
+        const dpkgBuildPackageOpts = core.getInput("dpkg_buildpackage_opts").replace(" ", "").split(",") || defaultDpkgBuildPackageOpts
         const lintianOpts = core.getInput("lintian_opts") || []
 
         const workspaceDirectory = process.cwd()
