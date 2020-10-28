@@ -136,6 +136,16 @@ async function main() {
         //////////////////////////////////////
         // Update packages list
         //////////////////////////////////////
+        core.startGroup("Add backports repo to apt sources")
+        await exec.exec("docker", ["exec", container].concat(
+            ["bash", "-c"].concat(
+                [
+                    "echo 'deb http://deb.debian.org/debian " + distribution + "-backports main' > /etc/apt/sources.list.d/" + distribution + "-backports.list"
+                ]
+            )
+        ))
+        core.endGroup()
+
         core.startGroup("Update packages list")
         await exec.exec("docker", ["exec", container].concat(
             ["apt-get", "update"]
@@ -160,10 +170,15 @@ async function main() {
 
             return devPackages.concat(libPythonPackages)
         }
+
         core.startGroup("Install development packages")
         await exec.exec("docker", ["exec", container].concat(
             [
-                "apt-get", "install", "--no-install-recommends", "-y"
+                "apt-get",
+                "install",
+                "-t", distribution + "-backports",
+                "--no-install-recommends",
+                "-y"
             ].concat(getDevPackages())
         ))
         core.endGroup()
