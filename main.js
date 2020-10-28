@@ -54,15 +54,9 @@ async function main() {
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
 
-        async function runDockerExecStep(title, commandParams) {
-            core.startGroup(title)
-            await exec.exec("docker", [
-                "exec",
-                container
-            ].concat(commandParams))
-            core.endGroup()
-        }
-
+        //////////////////////////////////////
+        // Print details
+        //////////////////////////////////////
         core.startGroup("Print details")
         const details = {
             package: package,
@@ -81,6 +75,9 @@ async function main() {
         console.log(details)
         core.endGroup()
 
+        //////////////////////////////////////
+        // Create and start container
+        //////////////////////////////////////
         core.startGroup("Create container")
         await exec.exec("docker", [
             "create",
@@ -104,32 +101,50 @@ async function main() {
         ])
         core.endGroup()
 
+        //////////////////////////////////////
+        // Create tarball of source if package is revision of upstream
+        //////////////////////////////////////
         if (revision) {
-            await runDockerExecStep("Create tarball", [
-                "tar",
-                "--exclude-vcs",
-                "--exclude", "./debian",
-                "--transform", `s/^\./${package}-${version}/`,
-                "-cvzf", `${buildDirectory}/${package}_${version}.orig.tar.gz`,
-                "-C", sourceDirectory,
-                "./"
-            ])
+            core.startGroup("Create tarball")
+            await exec.exec("docker", ["exec", container].concat(
+                [
+                    "tar",
+                    "--exclude-vcs",
+                    "--exclude", "./debian",
+                    "--transform", `s/^\./${package}-${version}/`,
+                    "-cvzf", `${buildDirectory}/${package}_${version}.orig.tar.gz`,
+                    "-C", sourceDirectory,
+                    "./"
+                ]
+            ))
+            core.endGroup()
         }
 
+        //////////////////////////////////////
+        // Add target architectures
+        //////////////////////////////////////
         if (targetArchitectures.length != 0) {
             targetArchitectures.forEach(targetArchitecture => {
-                await runDockerExecStep(
-                    "Add target architecture: " + targetArchitecture,
+                core.startGroup("Add target architecture: " + targetArchitecture)
+                await exec.exec("docker", ["exec", container].concat(
                     ["dpkg", "--add-architecture", targetArchitecture]
-                )
+                ))
+                core.endGroup()
             })
         }
 
-        await runDockerExecStep(
-            "Update packages list",
+        //////////////////////////////////////
+        // Update packages list
+        //////////////////////////////////////
+        core.startGroup("Update packages list")
+        await exec.exec("docker", ["exec", container].concat(
             ["apt-get", "update"]
-        )
+        ))
+        core.endGroup()
 
+        //////////////////////////////////////
+        // Install required packages
+        //////////////////////////////////////
         function getDevPackages() {
             devPackages = [
                 // General packaging stuff
@@ -145,36 +160,47 @@ async function main() {
 
             return devPackages
         }
-        await runDockerExecStep(
-            "Install development packages",
+        core.startGroup("Install development packages")
+        await exec.exec("docker", ["exec", container].concat(
             [
                 "apt-get", "install", "--no-install-recommends", "-y"
             ].concat(getDevPackages())
-        )
+        ))
+        core.endGroup()
 
-        await runDockerExecStep(
-            "Install build dependencies",
+        core.startGroup("Install build dependencies")
+        await exec.exec("docker", ["exec", container].concat(
             ["apt-get", "build-dep", "-y", sourceDirectory]
-        )
+        ))
+        core.endGroup()
 
+        //////////////////////////////////////
+        // Build package and run static analysis for all architectures
+        //////////////////////////////////////
         targetArchitectures.forEach(targetArchitecture => {
-            await runDockerExecStep(
-                "Build package for architecture: " + targetArchitecture,
+            core.startGroup("Build package for architecture: " + targetArchitecture)
+            await exec.exec("docker", ["exec", container].concat(
                 [
                     "dpkg-buildpackage",
                     "-a" + targetArchitecture
                 ].concat(dpkgBuildPackageOpts)
-            )
-                await runDockerExecStep(
-                "Run static analysis",
+            ))
+            core.endGroup()
+
+            core.startGroup("Run static analysis")
+            await exec.exec("docker", ["exec", container].concat(
                 ["lintian"]
                     .concat(lintianOpts)
                     .concat("*" + targetArchitecture + ".changes")
-            )
+            ))
+            core.endGroup()
         })
 
-        await runDockerExecStep(
-            "Move artifacts",
+        //////////////////////////////////////
+        // Move artifacts
+        //////////////////////////////////////
+        core.startGroup("Move artifacts")
+        await exec.exec("docker", ["exec", container].concat(
             [
                 "find",
                 buildDirectory,
@@ -184,7 +210,8 @@ async function main() {
                 "-print",
                 "-exec", "mv", "{}", artifactsDirectory, ";"
             ]
-        )
+        ))
+        core.endGroup()
     } catch (error) {
         core.setFailed(error.message)
     }
