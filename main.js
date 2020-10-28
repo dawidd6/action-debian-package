@@ -124,13 +124,13 @@ async function main() {
         // Add target architectures
         //////////////////////////////////////
         if (targetArchitectures.length != 0) {
-            targetArchitectures.forEach(targetArchitecture => {
+            for (const targetArchitecture of targetArchitectures) {
                 core.startGroup("Add target architecture: " + targetArchitecture)
                 await exec.exec("docker", ["exec", container].concat(
                     ["dpkg", "--add-architecture", targetArchitecture]
                 ))
                 core.endGroup()
-            })
+            }
         }
 
         //////////////////////////////////////
@@ -154,9 +154,9 @@ async function main() {
             ]
 
             // Used by pybuild
-            targetArchitectures.forEach(targetArchitecture => {
+            for (const targetArchitecture of targetArchitectures) {
                 devPackages.concat("libpython3.7-minimal:" + targetArchitecture)
-            })
+            }
 
             return devPackages
         }
@@ -177,7 +177,7 @@ async function main() {
         //////////////////////////////////////
         // Build package and run static analysis for all architectures
         //////////////////////////////////////
-        targetArchitectures.forEach(targetArchitecture => {
+        for (const targetArchitecture of targetArchitectures) {
             core.startGroup("Build package for architecture: " + targetArchitecture)
             await exec.exec("docker", ["exec", container].concat(
                 [
@@ -194,7 +194,7 @@ async function main() {
                     .concat("*" + targetArchitecture + ".changes")
             ))
             core.endGroup()
-        })
+        }
 
         //////////////////////////////////////
         // Move artifacts
