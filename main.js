@@ -154,9 +154,9 @@ async function main() {
             ]
 
             // Used by pybuild
-            for (const targetArchitecture of targetArchitectures) {
+            targetArchitectures.forEach(targetArchitecture => {
                 devPackages.concat("libpython3.7-minimal:" + targetArchitecture)
-            }
+            });
 
             return devPackages
         }
