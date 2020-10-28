@@ -22,7 +22,7 @@ async function getOS(distribution) {
 
 async function main() {
     try {
-        const targetArchitectures = core.getInput("target_architectures") || []
+        const targetArchitectures = core.getInput("target_architectures").replaceAll(" ", "").split(",") || []
 
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
