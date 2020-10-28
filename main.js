@@ -130,21 +130,26 @@ async function main() {
             ["apt-get", "update"]
         )
 
-        args = [
-            "apt-get", "install", "--no-install-recommends", "-y",
-            // General packaging stuff
-            "dpkg-dev",
-            "debhelper",
-            "lintian"
-        ]
+        function getDevPackages() {
+            devPackages = [
+                // General packaging stuff
+                "dpkg-dev",
+                "debhelper",
+                "lintian"
+            ]
 
-        // Used by pybuild
-        for (targetArchitecture in targetArchitectures) {
-            args.concat("libpython3.7-minimal:" + targetArchitecture)
+            // Used by pybuild
+            for (targetArchitecture in targetArchitectures) {
+                devPackages.concat("libpython3.7-minimal:" + targetArchitecture)
+            }
+
+            return devPackages
         }
         runDockerExecStep(
             "Install development packages",
-            args
+            [
+                "apt-get", "install", "--no-install-recommends", "-y"
+            ].concat(getDevPackages())
         )
 
         runDockerExecStep(

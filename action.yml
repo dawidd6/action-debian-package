@@ -13,7 +13,7 @@ inputs:
     required: false
     default: "./"
   target_architectures:
-    description: Target architecture of Debian package to build
+    description: Target architectures to build for
     required: false
     default: ""
   dpkg_buildpackage_opts:
