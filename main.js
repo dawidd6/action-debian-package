@@ -189,9 +189,15 @@ async function main() {
 
             core.startGroup("Run static analysis")
             await exec.exec("docker", ["exec", container].concat(
-                ["lintian"]
-                    .concat(lintianOpts)
-                    .concat("*" + targetArchitecture + ".changes")
+                [
+                    "find",
+                    buildDirectory,
+                    "-maxdepth", "1",
+                    "-name", `*${targetArchitecture}.changes`,
+                    "-type", "f",
+                    "-print",
+                    "-exec"
+                ]).concat(["lintian"]).concat(lintianOpts).concat(["{}", ";"]
             ))
             core.endGroup()
         }
