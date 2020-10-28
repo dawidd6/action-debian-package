@@ -116,7 +116,7 @@ async function main() {
             ])
         }
 
-        if (targetArchitectures.length() != 0) {
+        if (targetArchitectures.length != 0) {
             for (targetArchitecture in targetArchitectures) {
                 runDockerExecStep(
                     "Add target architecture: " + targetArchitecture,
