@@ -105,7 +105,7 @@ async function main() {
         core.endGroup()
 
         if (revision) {
-            runDockerExecStep("Create tarball", [
+            await runDockerExecStep("Create tarball", [
                 "tar",
                 "--exclude-vcs",
                 "--exclude", "./debian",
@@ -118,14 +118,14 @@ async function main() {
 
         if (targetArchitectures.length != 0) {
             targetArchitectures.forEach(targetArchitecture => {
-                runDockerExecStep(
+                await runDockerExecStep(
                     "Add target architecture: " + targetArchitecture,
                     ["dpkg", "--add-architecture", targetArchitecture]
                 )
             })
         }
 
-        runDockerExecStep(
+        await runDockerExecStep(
             "Update packages list",
             ["apt-get", "update"]
         )
@@ -145,27 +145,27 @@ async function main() {
 
             return devPackages
         }
-        runDockerExecStep(
+        await runDockerExecStep(
             "Install development packages",
             [
                 "apt-get", "install", "--no-install-recommends", "-y"
             ].concat(getDevPackages())
         )
 
-        runDockerExecStep(
+        await runDockerExecStep(
             "Install build dependencies",
             ["apt-get", "build-dep", "-y", sourceDirectory]
         )
 
         targetArchitectures.forEach(targetArchitecture => {
-            runDockerExecStep(
+            await runDockerExecStep(
                 "Build package for architecture: " + targetArchitecture,
                 [
                     "dpkg-buildpackage",
                     "-a" + targetArchitecture
                 ].concat(dpkgBuildPackageOpts)
             )
-                runDockerExecStep(
+                await runDockerExecStep(
                 "Run static analysis",
                 ["lintian"]
                     .concat(lintianOpts)
@@ -173,7 +173,7 @@ async function main() {
             )
         })
 
-        runDockerExecStep(
+        await runDockerExecStep(
             "Move artifacts",
             [
                 "find",

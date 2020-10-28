@@ -13,15 +13,15 @@ inputs:
     required: false
     default: "./"
   target_architectures:
-    description: Target architectures to build for
+    description: Comma-separated options list of target architectures to build for
     required: false
     default: ""
   dpkg_buildpackage_opts:
-    description: Options list provided to 'dpkg-buildpackage' as command line parameters (note that '-a' is automatically provided for target architectures specified by target_architectures)
+    description: Comma-separated options list provided to 'dpkg-buildpackage' as command line parameters (note that '-a' is automatically provided for target architectures specified by target_architectures)
     required: false
     default: "--no-sign, -d"
   lintian_opts:
-    description: Options list provided to 'lintian' as command line parameters
+    description: Comma-separated options list provided to 'lintian' as command line parameters
     required: false
     default: ""
 
