@@ -117,12 +117,12 @@ async function main() {
         }
 
         if (targetArchitectures.length != 0) {
-            for (targetArchitecture in targetArchitectures) {
+            targetArchitectures.forEach(targetArchitecture => {
                 runDockerExecStep(
                     "Add target architecture: " + targetArchitecture,
                     ["dpkg", "--add-architecture", targetArchitecture]
                 )
-            }
+            })
         }
 
         runDockerExecStep(
@@ -139,9 +139,9 @@ async function main() {
             ]
 
             // Used by pybuild
-            for (targetArchitecture in targetArchitectures) {
+            targetArchitectures.forEach(targetArchitecture => {
                 devPackages.concat("libpython3.7-minimal:" + targetArchitecture)
-            }
+            })
 
             return devPackages
         }
@@ -157,7 +157,7 @@ async function main() {
             ["apt-get", "build-dep", "-y", sourceDirectory]
         )
 
-        for (targetArchitecture in targetArchitectures) {
+        targetArchitectures.forEach(targetArchitecture => {
             runDockerExecStep(
                 "Build package for architecture: " + targetArchitecture,
                 [
@@ -165,7 +165,7 @@ async function main() {
                     "-a" + targetArchitecture
                 ].concat(dpkgBuildPackageOpts)
             )
-        }
+        })
 
         runDockerExecStep(
             "Run static analysis",
