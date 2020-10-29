@@ -22,6 +22,8 @@ async function getOS(distribution) {
 
 async function main() {
     try {
+        const getDevPackagesFromBackports = (core.getInput("get_dev_packages_from_backports") == "1") || 0
+
         const targetArchitectures = core.getInput("target_architectures").replace(" ", "").split(",") || []
 
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
@@ -136,15 +138,17 @@ async function main() {
         //////////////////////////////////////
         // Update packages list
         //////////////////////////////////////
-        core.startGroup("Add backports repo to apt sources")
-        await exec.exec("docker", ["exec", container].concat(
-            ["bash", "-c"].concat(
-                [
-                    "echo 'deb http://deb.debian.org/debian " + distribution + "-backports main' > /etc/apt/sources.list.d/" + distribution + "-backports.list"
-                ]
-            )
-        ))
-        core.endGroup()
+        if (getDevPackagesFromBackports) {
+            core.startGroup("Add backports repo to apt sources")
+            await exec.exec("docker", ["exec", container].concat(
+                ["bash", "-c"].concat(
+                    [
+                        "echo 'deb http://deb.debian.org/debian " + distribution + "-backports main' > /etc/apt/sources.list.d/" + distribution + "-backports.list"
+                    ]
+                )
+            ))
+            core.endGroup()
+        }
 
         core.startGroup("Update packages list")
         await exec.exec("docker", ["exec", container].concat(
@@ -171,15 +175,21 @@ async function main() {
             return devPackages.concat(libPythonPackages)
         }
 
+        function getAptInstallCommand() {
+            setDistroFields = []
+            if (getDevPackagesFromBackports) {
+                setDistroFields = ["-t", distribution + "-backports"]
+            }
+            return ["apt-get", "install"]
+                .concat(setDistroFields)
+                .concat(
+                    ["--no-install-recommends", "-y"]
+                )
+        }
+
         core.startGroup("Install development packages")
         await exec.exec("docker", ["exec", container].concat(
-            [
-                "apt-get",
-                "install",
-                "-t", distribution + "-backports",
-                "--no-install-recommends",
-                "-y"
-            ].concat(getDevPackages())
+            getAptInstallCommand().concat(getDevPackages())
         ))
         core.endGroup()
 

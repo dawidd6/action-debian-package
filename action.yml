@@ -24,6 +24,10 @@ inputs:
     description: Comma-separated options list provided to 'lintian' as command line parameters
     required: false
     default: ""
+  get_dev_packages_from_backports:
+    description: Only set to 1 if you know what you are doing. All other values are considered as 0
+    required: false
+    default: "0"
 
 runs:
   using: node12
