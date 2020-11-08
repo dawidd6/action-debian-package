@@ -3,7 +3,8 @@ name: Test Action
 on:
   push:
     branches:
-      - '*'
+      - master
+  pull_request:
 
 jobs:
   test:
@@ -33,8 +34,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Clone repo
-        run: |
-          git clone --depth=1 ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
+        run: git clone --depth=1 ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
       - name: Test run
         uses: ./
         with:
