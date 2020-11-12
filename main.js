@@ -5,17 +5,23 @@ const hub = require("docker-hub-utils")
 const path = require("path")
 const fs = require("fs")
 
-function getDistribution(distribution) {
-    return distribution.replace("UNRELEASED", "unstable")
-                       .replace("-security", "")
-                       .replace("-backports", "")
+function getImageTag(imageName, distribution) {
+    if (imageName == "debian") {
+        return distribution.replace("UNRELEASED", "unstable")
+            .replace("-security", "")
+    } else {
+        return distribution.replace("UNRELEASED", "unstable")
+            .replace("-security", "")
+            .replace("-backports", "")
+    }
 }
 
-async function getOS(distribution) {
-    for (const os of ["debian", "ubuntu"]) {
-        const tags = await hub.queryTags({ user: "library", name: os })
-        if (tags.find(tag => tag.name == distribution)) {
-            return os
+async function getImageName(distribution) {
+    const tag = getImageTag("", distribution)
+    for (const image of ["debian", "ubuntu"]) {
+        const tags = await hub.queryTags({ user: "library", name: image })
+        if (tags.find(t => t.name == tag)) {
+            return image
         }
     }
 }
@@ -32,25 +38,25 @@ async function main() {
 
         const file = path.join(sourceDirectory, "debian/changelog")
         const changelog = await firstline(file)
-        const regex = /^(?<package>.+) \(((?<epoch>[0-9]+):)?(?<version>[^:-]+)(-(?<revision>[^:-]+))?\) (?<distribution>.+);/
+        const regex = /^(?<pkg>.+) \(((?<epoch>[0-9]+):)?(?<version>[^:-]+)(-(?<revision>[^:-]+))?\) (?<distribution>.+);/
         const match = changelog.match(regex)
-        const { package, epoch, version, revision, distribution } = match.groups
-        const os = await getOS(getDistribution(distribution))
-        const container = package
-        const image = os + ":" + getDistribution(distribution)
+        const { pkg, epoch, version, revision, distribution } = match.groups
+        const imageName = await getImageName(distribution)
+        const imageTag = await getImageTag(imageName, distribution)
+        const container = pkg
+        const image = imageName + ":" + imageTag
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
 
         core.startGroup("Print details")
         const details = {
-            package: package,
+            pkg: pkg,
             epoch: epoch,
             version: version,
             revision: revision,
-            distribution: getDistribution(distribution),
-            os: os,
-            container: container,
+            distribution: distribution,
             image: image,
+            container: container,
             workspaceDirectory: workspaceDirectory,
             sourceDirectory: sourceDirectory,
             buildDirectory: buildDirectory,
@@ -89,8 +95,8 @@ async function main() {
                 "tar",
                 "--exclude-vcs",
                 "--exclude", "./debian",
-                "--transform", `s/^\./${package}-${version}/S`,
-                "-cvzf", `${buildDirectory}/${package}_${version}.orig.tar.gz`,
+                "--transform", `s/^\./${pkg}-${version}/S`,
+                "-cvzf", `${buildDirectory}/${pkg}_${version}.orig.tar.gz`,
                 "-C", sourceDirectory,
                 "./"
             ])
@@ -109,7 +115,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "-yq", "dpkg-dev", "debhelper"
+            "apt-get", "install", "-yq", "-t", imageTag, "dpkg-dev", "debhelper"
         ])
         core.endGroup()
 
@@ -117,7 +123,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "build-dep", "-yq", sourceDirectory
+            "apt-get", "build-dep", "-yq", "-t", imageTag, sourceDirectory
         ])
         core.endGroup()
 
@@ -136,7 +142,7 @@ async function main() {
             "find",
             buildDirectory,
             "-maxdepth", "1",
-            "-name", `${package}*${version}*.*`,
+            "-name", `${pkg}*${version}*.*`,
             "-type", "f",
             "-print",
             "-exec", "mv", "{}", artifactsDirectory, ";"
