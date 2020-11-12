@@ -29,7 +29,10 @@ jobs:
             ref: ubuntu/0.16.2-1
           - package: netcat-openbsd
             repo: https://git.launchpad.net/ubuntu/+source/netcat-openbsd
-            ref: import/1.206-1ubuntu1
+            ref: applied/1.206-1ubuntu1
+          - package: iproute2
+            repo: https://git.launchpad.net/ubuntu/+source/iproute2
+            ref: applied/4.18.0-1ubuntu2_ubuntu18.04.1
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
