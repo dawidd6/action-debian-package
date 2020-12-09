@@ -78,6 +78,7 @@ async function main() {
             image,
             "sleep", "inf"
         ])
+        core.saveState("container", container)
         core.endGroup()
 
         core.startGroup("Start container")
