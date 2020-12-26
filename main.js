@@ -128,7 +128,7 @@ async function main() {
         ])
         core.endGroup()
 
-        core.startGroup("Build package")
+        core.startGroup("Build packages")
         await exec.exec("docker", [
             "exec",
             container,
@@ -136,7 +136,23 @@ async function main() {
         ])
         core.endGroup()
 
-        core.startGroup("Move artifacts")
+        core.startGroup("Install built packages")
+        await exec.exec("docker", [
+            "exec",
+            container,
+            "debi", "--with-depends"
+        ])
+        core.endGroup()
+
+        core.startGroup("List packages contents")
+        await exec.exec("docker", [
+            "exec",
+            container,
+            "debc"
+        ])
+        core.endGroup()
+
+        core.startGroup("Move build artifacts")
         await exec.exec("docker", [
             "exec",
             container,
