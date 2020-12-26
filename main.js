@@ -92,7 +92,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "bash", "-c", "echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/00noconfirm"
+            "bash", "-c", "echo 'APT::Get::Assume-Yes \"true\";' > /etc/apt/apt.conf.d/00noconfirm"
         ])
         await exec.exec("docker", [
             "exec",
