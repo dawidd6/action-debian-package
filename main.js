@@ -92,17 +92,17 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "bash -c 'rm /etc/apt/apt.conf.d/*'"
+            "bash", "-c", "rm /etc/apt/apt.conf.d/*"
         ])
         await exec.exec("docker", [
             "exec",
             container,
-            "bash -c 'echo APT::Get::Assume-Yes \"true\"\; > /etc/apt/apt.conf.d/00noconfirm'"
+            "bash", "-c", "echo APT::Get::Assume-Yes \"true\"\; > /etc/apt/apt.conf.d/00noconfirm"
         ])
         await exec.exec("docker", [
             "exec",
             container,
-            "bash -c 'echo debconf debconf/frontend select Noninteractive | debconf-set-selections'"
+            "bash", "-c", "echo debconf debconf/frontend select Noninteractive | debconf-set-selections"
         ])
         core.endGroup()
 
