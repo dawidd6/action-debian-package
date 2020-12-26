@@ -97,11 +97,6 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "bash", "-c", "cat /etc/apt/apt.conf.d/00noconfirm"
-        ])
-        await exec.exec("docker", [
-            "exec",
-            container,
             "bash", "-c", "echo debconf debconf/frontend select Noninteractive | debconf-set-selections"
         ])
         core.endGroup()
