@@ -145,7 +145,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "dpkg-buildpackage", "-tc"
+            "dpkg-buildpackage"
         ])
         core.endGroup()
 
