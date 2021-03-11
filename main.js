@@ -172,7 +172,7 @@ async function main() {
             "find",
             buildDirectory,
             "-maxdepth", "1",
-            "-name", `${pkg}*${version}*.*`,
+            "-name", `*${version}*.*`,
             "-type", "f",
             "-print",
             "-exec", "mv", "{}", artifactsDirectory, ";"
