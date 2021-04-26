@@ -133,13 +133,15 @@ async function main() {
         ])
         core.endGroup()
 
-        core.startGroup("Install build dependencies")
-        await exec.exec("docker", [
-            "exec",
-            container,
-            "apt-get", "build-dep", "-yq", "-t", imageTag, sourceDirectory
-        ])
-        core.endGroup()
+        if (imageTag != "trusty") {
+            core.startGroup("Install build dependencies")
+            await exec.exec("docker", [
+                "exec",
+                container,
+                "apt-get", "build-dep", "-yq", "-t", imageTag, sourceDirectory
+            ])
+            core.endGroup()
+        }
 
         core.startGroup("Build packages")
         await exec.exec("docker", [
