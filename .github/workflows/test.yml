@@ -21,12 +21,12 @@ jobs:
           - package: micro
             repo: https://salsa.debian.org/go-team/packages/micro.git
             ref: debian/2.0.6-2_bpo10+1
+          - package: grep
+            repo: https://salsa.debian.org/debian/grep.git
+            ref: debian/3.3-1_bpo9+1
           - package: deber
             repo: https://github.com/dawidd6/deber.git
             ref: v1.0.0
-          - package: lazygit
-            repo: https://github.com/dawidd6/lazygit-debian.git
-            ref: ubuntu/0.16.2-1
           - package: netcat-openbsd
             repo: https://git.launchpad.net/ubuntu/+source/netcat-openbsd
             ref: import/1.206-1ubuntu1
