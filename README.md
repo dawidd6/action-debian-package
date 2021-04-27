@@ -8,6 +8,8 @@ An action that builds a Debian package from source in a Docker container.
 - name: Build Debian package
   uses: dawidd6/action-debian-package@v1
   with:
-    source_directory: lolcat # optional, relative to workspace directory
-    artifacts_directory: output # optional, relative to workspace directory
+    # Optional, relative to workspace directory
+    source_directory: lolcat
+    # Optional, relative to workspace directory
+    artifacts_directory: output
 ```
