@@ -12,4 +12,6 @@ An action that builds a Debian package from source in a Docker container.
     source_directory: lolcat
     # Optional, relative to workspace directory
     artifacts_directory: output
+    os_distribution: bionic
+    # Optional, value from `debian/changelog` is used if not defined
 ```
