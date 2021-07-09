@@ -12,6 +12,9 @@ inputs:
     description: Directory where build artifacts will be placed, relative to workspace
     required: false
     default: ./
+  os_distribution:
+    description: OS distribution name, value from `debian/changelog` is used if not defined
+    required: false
 runs:
   using: node12
   main: main.js
