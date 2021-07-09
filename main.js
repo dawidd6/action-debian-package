@@ -108,13 +108,8 @@ async function main() {
             await exec.exec("docker", [
                 "exec",
                 container,
-                "tar",
-                "--exclude-vcs",
-                "--exclude", "./debian",
-                "--transform", `s/^\./${pkg}-${version}/S`,
-                "-cvzf", `${buildDirectory}/${pkg}_${version}.orig.tar.gz`,
-                "-C", sourceDirectory,
-                "./"
+                "git-deborig",
+                "HEAD"
             ])
             core.endGroup()
         }
