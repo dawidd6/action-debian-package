@@ -5,7 +5,7 @@ branding:
   icon: package
 inputs:
   cpu_architecture:
-    description: Target CPU architecture
+    description: Target CPU architecture (amd64, arm64, arm, ...)
     required: false
     default: amd64
   source_directory:
