@@ -14,4 +14,6 @@ An action that builds a Debian package from source in a Docker container.
     artifacts_directory: output
     # Optional, value from `debian/changelog` is used if not defined
     os_distribution: bionic
+    # Optional, target architecture, defaults to amd64
+    cpu_architecture: arm64
 ```
