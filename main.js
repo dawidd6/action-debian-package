@@ -69,6 +69,8 @@ async function main() {
         if (cpuArchitecture != "amd64") {
             core.startGroup("Install QEMU")
             await exec.exec("sudo", ["apt-get", "install", "-y", "qemu", "binfmt-support", "qemu-user-static"])
+            await exec.exec("wget", ["http://mirrors.kernel.org/ubuntu/pool/universe/q/qemu/qemu-user-static_5.2+dfsg-9ubuntu2_amd64.deb", "-O", "/tmp/qemu.deb"])
+            await exec.exec("sudo", ["dpkg", "-i", "/tmp/qemu.deb"])
             core.endGroup()
         }
 
