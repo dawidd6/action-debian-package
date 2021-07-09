@@ -58,6 +58,7 @@ async function main() {
             version: version,
             revision: revision,
             distribution: distribution,
+            arch: cpuArchitecture,
             image: image,
             container: container,
             workspaceDirectory: workspaceDirectory,
