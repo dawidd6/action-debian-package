@@ -103,17 +103,6 @@ async function main() {
         ])
         core.endGroup()
 
-        if (revision) {
-            core.startGroup("Create tarball")
-            await exec.exec("docker", [
-                "exec",
-                container,
-                "git-deborig",
-                "HEAD"
-            ])
-            core.endGroup()
-        }
-
         core.startGroup("Update packages list")
         await exec.exec("docker", [
             "exec",
@@ -136,6 +125,17 @@ async function main() {
                 "exec",
                 container,
                 "apt-get", "build-dep", "-yq", "-t", imageTag, sourceDirectory
+            ])
+            core.endGroup()
+        }
+
+        if (revision) {
+            core.startGroup("Create tarball")
+            await exec.exec("docker", [
+                "exec",
+                container,
+                "git-deborig",
+                "HEAD"
             ])
             core.endGroup()
         }
