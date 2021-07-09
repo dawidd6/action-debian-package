@@ -30,7 +30,7 @@ async function main() {
     try {
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
-        const os_distribution = core.getInput("os_distribution") || ""
+        const osDistribution = core.getInput("os_distribution") || ""
 
         const workspaceDirectory = process.cwd()
         const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
@@ -39,10 +39,10 @@ async function main() {
 
         const file = path.join(sourceDirectory, "debian/changelog")
         const changelog = await firstline(file)
-        const regex = /^(?<pkg>.+) \(((?<epoch>[0-9]+):)?(?<version>[^:-]+)(-(?<revision>[^:-]+))?\) (?<package_distribution>.+);/
+        const regex = /^(?<pkg>.+) \(((?<epoch>[0-9]+):)?(?<version>[^:-]+)(-(?<revision>[^:-]+))?\) (?<packageDistribution>.+);/
         const match = changelog.match(regex)
-        const { pkg, epoch, version, revision, package_distribution } = match.groups
-        const distribution = os_distribution ? os_distribution : package_distribution
+        const { pkg, epoch, version, revision, packageDistribution } = match.groups
+        const distribution = osDistribution ? osDistribution : packageDistribution
         const imageName = await getImageName(distribution)
         const imageTag = await getImageTag(imageName, distribution)
         const container = pkg
