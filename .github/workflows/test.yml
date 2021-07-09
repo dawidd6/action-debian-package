@@ -13,24 +13,31 @@ jobs:
       matrix:
         include:
           - package: at
+            arch: amd64
             repo: https://salsa.debian.org/debian/at.git
             ref: debian/3.1.23-1
           - package: lolcat
+            arch: arm64
             repo: https://salsa.debian.org/ruby-team/lolcat.git
             ref: debian/100.0.1-2
           - package: micro
+            arch: amd64
             repo: https://salsa.debian.org/go-team/packages/micro.git
             ref: debian/2.0.6-2_bpo10+1
           - package: dropbear
+            arch: arm64
             repo: https://salsa.debian.org/debian/dropbear.git
             ref: debian/2016.74-5+deb9u1
           - package: deber
+            arch: amd64
             repo: https://github.com/dawidd6/deber.git
             ref: v1.0.0
           - package: netcat-openbsd
+            arch: arm64
             repo: https://git.launchpad.net/ubuntu/+source/netcat-openbsd
             ref: import/1.206-1ubuntu1
           - package: iproute2
+            arch: amd64
             repo: https://git.launchpad.net/ubuntu/+source/iproute2
             ref: import/4.18.0-1ubuntu2_ubuntu18.04.1
     steps:
@@ -41,6 +48,7 @@ jobs:
       - name: Test run
         uses: ./
         with:
+          cpu_architecture: ${{matrix.arch}}
           source_directory: ${{matrix.package}}
           artifacts_directory: artifacts
       - name: Check files

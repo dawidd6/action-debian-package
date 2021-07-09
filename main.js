@@ -28,6 +28,7 @@ async function getImageName(distribution) {
 
 async function main() {
     try {
+        const cpuArchitecture = core.getInput("cpu_architecture") || "amd64"
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
         const osDistribution = core.getInput("os_distribution") || ""
@@ -67,9 +68,18 @@ async function main() {
         console.log(details)
         core.endGroup()
 
+        if (cpuArchitecture != "amd64") {
+            core.startGroup("Install QEMU")
+            // Need newer QEMU to avoid errors
+            await exec.exec("wget", ["http://mirrors.kernel.org/ubuntu/pool/universe/q/qemu/qemu-user-static_5.2+dfsg-9ubuntu2_amd64.deb", "-O", "/tmp/qemu.deb"])
+            await exec.exec("sudo", ["dpkg", "-i", "/tmp/qemu.deb"])
+            core.endGroup()
+        }
+
         core.startGroup("Create container")
         await exec.exec("docker", [
             "create",
+            "--platform", `linux/${cpuArchitecture}`,
             "--name", container,
             "--volume", workspaceDirectory + ":" + workspaceDirectory,
             "--workdir", sourceDirectory,
