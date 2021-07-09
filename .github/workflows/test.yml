@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - package: at
-            arch: amd64
+            arch: arm
             repo: https://salsa.debian.org/debian/at.git
             ref: debian/3.1.23-1
           - package: lolcat
@@ -37,7 +37,7 @@ jobs:
             repo: https://git.launchpad.net/ubuntu/+source/netcat-openbsd
             ref: import/1.206-1ubuntu1
           - package: iproute2
-            arch: amd64
+            arch: arm
             repo: https://git.launchpad.net/ubuntu/+source/iproute2
             ref: import/4.18.0-1ubuntu2_ubuntu18.04.1
     steps:
