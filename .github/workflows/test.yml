@@ -25,11 +25,11 @@ jobs:
             repo: https://salsa.debian.org/go-team/packages/micro.git
             ref: debian/2.0.6-2_bpo10+1
           - package: dropbear
-            arch: arm64
+            arch: amd64
             repo: https://salsa.debian.org/debian/dropbear.git
             ref: debian/2016.74-5+deb9u1
           - package: deber
-            arch: amd64
+            arch: arm64
             repo: https://github.com/dawidd6/deber.git
             ref: v1.0.0
           - package: netcat-openbsd
