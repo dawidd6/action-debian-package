@@ -1,7 +1,7 @@
 {
   "name": "action-debian-package",
   "dependencies": {
-    "@actions/core": "^1.2.7",
+    "@actions/core": "^1.7.0",
     "@actions/exec": "^1.0.4",
     "docker-hub-utils": "^1.10.43",
     "firstline": "^2.0.2"
