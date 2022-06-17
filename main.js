@@ -76,6 +76,16 @@ async function main() {
             await exec.exec("sudo", ["dpkg", "-i", "/tmp/qemu.deb"])
             core.endGroup()
         }
+        
+        if (distribution.endsWith('-backports') {
+            core.startGroup("Enable backports")
+            await exec.exec("docker", [
+                "exec",
+                container,
+                "bash", "-c", "echo 'APT::Get::Assume-Yes \"true\";' > /etc/apt/apt.conf.d/00noconfirm"
+            ])
+            core.endGroup()
+        }
 
         core.startGroup("Create container")
         await exec.exec("docker", [
@@ -126,7 +136,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "-yq", "-t", imageTag, "dpkg-dev", "debhelper", "devscripts"
+            "apt-get", "install", "-yq", "dpkg-dev", "debhelper", "devscripts"
         ])
         core.endGroup()
 
@@ -135,7 +145,7 @@ async function main() {
             await exec.exec("docker", [
                 "exec",
                 container,
-                "apt-get", "build-dep", "-yq", "-t", imageTag, sourceDirectory
+                "apt-get", "build-dep", "-yq", sourceDirectory
             ])
             core.endGroup()
         }
