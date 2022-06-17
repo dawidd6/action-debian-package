@@ -135,7 +135,7 @@ async function main() {
 
         if (imageTag != "trusty") {
             core.startGroup("Install build dependencies")
-            releases = Array.prototype.concat(targetReleases.split(" ").map(function (item) {
+            releases = (targetReleases == "") ? [] : Array.prototype.concat(targetReleases.split(" ").map(function (item) {
                 return ["-t", item]
             }))
             console.log(targetReleases)
