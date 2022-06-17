@@ -4,6 +4,7 @@ const firstline = require("firstline")
 const hub = require("docker-hub-utils")
 const path = require("path")
 const fs = require("fs")
+const { debug } = require("console")
 
 function getImageTag(imageName, distribution) {
     if (imageName == "debian") {
@@ -135,13 +136,16 @@ async function main() {
 
         if (imageTag != "trusty") {
             core.startGroup("Install build dependencies")
+            releases = Array.prototype.concat(targetReleases.map(function (item) {
+                return ["-t", item]
+            }))
+            debug.log(targetReleases)
+            debug.log(releases)
             await exec.exec("docker", [
                 "exec",
                 container,
                 "apt-get", "build-dep", "-yq", "-t", imageTag
-            ].concat(Array.prototype.concat(targetReleases.map(function (item) {
-                return ["-t", item]
-            }))).concat(sourceDirectory))
+            ].concat(releases).concat(sourceDirectory))
             core.endGroup()
         }
 
