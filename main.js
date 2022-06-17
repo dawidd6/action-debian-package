@@ -77,12 +77,13 @@ async function main() {
             core.endGroup()
         }
         
-        if (distribution.endsWith('-backports') {
+        if (imageName == "debian" && distribution.endsWith("-backports")) {
             core.startGroup("Enable backports")
+            const baseDistribution = distribution.replace("-backports", "")
             await exec.exec("docker", [
                 "exec",
                 container,
-                "bash", "-c", "echo 'APT::Get::Assume-Yes \"true\";' > /etc/apt/apt.conf.d/00noconfirm"
+                "bash", "-c", `grep -m1 -E '^deb .+ ${baseDistribution} .+$' /etc/apt/sources.list | sed 's/ ${baseDistribution} / ${distribution} /' | tee /etc/apt/sources.list.d/backports.list`
             ])
             core.endGroup()
         }
