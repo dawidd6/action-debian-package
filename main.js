@@ -139,8 +139,8 @@ async function main() {
             releases = Array.prototype.concat(targetReleases.map(function (item) {
                 return ["-t", item]
             }))
-            debug.log(targetReleases)
-            debug.log(releases)
+            console.log(targetReleases)
+            console.log(releases)
             await exec.exec("docker", [
                 "exec",
                 container,
