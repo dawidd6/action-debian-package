@@ -33,6 +33,7 @@ async function main() {
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
         const osDistribution = core.getInput("os_distribution") || ""
+        const targetReleases = core.getInput("target_releases") || ""
 
         const workspaceDirectory = process.cwd()
         const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
@@ -49,8 +50,6 @@ async function main() {
         const imageTag = await getImageTag(imageName, distribution)
         const container = pkg
         const image = imageName + ":" + imageTag
-
-        const targetReleases = core.getInput("target_releases").split(' ') || [ imageTag ]
 
         fs.mkdirSync(artifactsDirectory, { recursive: true })
 
@@ -136,7 +135,7 @@ async function main() {
 
         if (imageTag != "trusty") {
             core.startGroup("Install build dependencies")
-            releases = Array.prototype.concat(targetReleases.map(function (item) {
+            releases = Array.prototype.concat(targetReleases.split(" ").map(function (item) {
                 return ["-t", item]
             }))
             console.log(targetReleases)
