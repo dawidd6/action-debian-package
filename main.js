@@ -32,7 +32,6 @@ async function main() {
         const sourceRelativeDirectory = core.getInput("source_directory") || "./"
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
         const osDistribution = core.getInput("os_distribution") || ""
-        const extraPackages = core.getInput("extra_packages").split(' ') || []
 
         const workspaceDirectory = process.cwd()
         const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
@@ -50,6 +49,8 @@ async function main() {
         const container = pkg
         const image = imageName + ":" + imageTag
 
+        const targetReleases = core.getInput("target_releases").split(' ') || [ imageTag ]
+
         fs.mkdirSync(artifactsDirectory, { recursive: true })
 
         core.startGroup("Print details")
@@ -62,7 +63,7 @@ async function main() {
             arch: cpuArchitecture,
             image: image,
             container: container,
-            extraPackages: extraPackages,
+            targetReleases: targetReleases,
             workspaceDirectory: workspaceDirectory,
             sourceDirectory: sourceDirectory,
             buildDirectory: buildDirectory,
@@ -128,7 +129,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "-yq", "dpkg-dev", "debhelper", "devscripts"
+            "apt-get", "install", "-yq", "-t", imageTag, "dpkg-dev", "debhelper", "devscripts"
         ])
         core.endGroup()
 
@@ -137,8 +138,10 @@ async function main() {
             await exec.exec("docker", [
                 "exec",
                 container,
-                "apt-get", "build-dep", "-yq", sourceDirectory
-            ])
+                "apt-get", "build-dep", "-yq", "-t", imageTag
+            ].concat(Array.prototype.concat(targetReleases.map(function (item) {
+                return ["-t", item]
+            }))).concat(sourceDirectory))
             core.endGroup()
         }
 

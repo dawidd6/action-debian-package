@@ -19,6 +19,9 @@ inputs:
   os_distribution:
     description: OS distribution name, value from `debian/changelog` is used if not defined
     required: false
+  target_release:
+    description: additional releases (buster-security, buster-backports, etc), space-separated
+    required: false
 runs:
   using: node12
   main: main.js
