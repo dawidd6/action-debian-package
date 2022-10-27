@@ -19,6 +19,10 @@ inputs:
   os_distribution:
     description: OS distribution name, value from `debian/changelog` is used if not defined
     required: false
+  lintian_opts:
+    description: Command line parameters provided to 'lintian'
+    required: false
+    default: ""
 runs:
   using: node16
   main: main.js
