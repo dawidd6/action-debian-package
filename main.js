@@ -19,10 +19,12 @@ async function getImageName(distribution) {
     const tag = getImageTag("", distribution)
     for (const image of ["debian", "ubuntu"]) {
         try {
+            core.startGroup("Get image name")
             await exec.exec("skopeo", [
                 "inspect",
                 `docker://docker.io/library/${image}:${tag}`
             ])
+            core.endGroup()
             return image
         } catch {
             continue
