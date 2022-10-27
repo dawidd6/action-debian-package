@@ -16,30 +16,37 @@ jobs:
             arch: arm
             repo: https://salsa.debian.org/debian/at.git
             ref: debian/3.1.23-1
+            lintian_opts: "-v"
           - package: lolcat
             arch: arm64
             repo: https://salsa.debian.org/ruby-team/lolcat.git
             ref: debian/100.0.1-2
+            lintian_opts: "-v"
           - package: micro
             arch: amd64
             repo: https://salsa.debian.org/go-team/packages/micro.git
             ref: debian/2.0.6-2_bpo10+1
+            lintian_opts: "-v"
           - package: dropbear
             arch: amd64
             repo: https://salsa.debian.org/debian/dropbear.git
             ref: debian/2016.74-5+deb9u1
+            lintian_opts: "-v"
           - package: deber
             arch: arm64
             repo: https://github.com/dawidd6/deber.git
             ref: v1.0.0
+            lintian_opts: "-v"
           - package: netcat-openbsd
             arch: arm64
             repo: https://git.launchpad.net/ubuntu/+source/netcat-openbsd
             ref: import/1.206-1ubuntu1
+            lintian_opts: "-v"
           - package: iproute2
             arch: arm
             repo: https://git.launchpad.net/ubuntu/+source/iproute2
             ref: import/4.18.0-1ubuntu2_ubuntu18.04.1
+            lintian_opts: "-v"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -51,6 +58,7 @@ jobs:
           cpu_architecture: ${{matrix.arch}}
           source_directory: ${{matrix.package}}
           artifacts_directory: artifacts
+          lintian_opts: ${{matrix.lintian_opts}}
       - name: Check files
         run: |
           ls -lh artifacts/${{matrix.package}}*.*
