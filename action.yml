@@ -20,6 +20,6 @@ inputs:
     description: OS distribution name, value from `debian/changelog` is used if not defined
     required: false
 runs:
-  using: node12
+  using: node16
   main: main.js
   post: post.js
