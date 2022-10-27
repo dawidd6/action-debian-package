@@ -1,7 +1,6 @@
 const core = require("@actions/core")
 const exec = require("@actions/exec")
 const firstline = require("firstline")
-const hub = require("docker-hub-utils")
 const path = require("path")
 const fs = require("fs")
 
@@ -22,8 +21,6 @@ async function getImageName(distribution) {
         try {
             await exec.exec("skopeo", [
                 "inspect",
-                "--no-tags",
-                "--no-creds",
                 `docker://docker.io/library/${image}:${tag}`
             ])
             return image
