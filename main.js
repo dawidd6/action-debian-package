@@ -19,9 +19,16 @@ function getImageTag(imageName, distribution) {
 async function getImageName(distribution) {
     const tag = getImageTag("", distribution)
     for (const image of ["debian", "ubuntu"]) {
-        const tags = await hub.queryTags({ user: "library", name: image })
-        if (tags.find(t => t.name == tag)) {
+        try {
+            await exec.exec("skopeo", [
+                "inspect",
+                "--no-tags",
+                "--no-creds",
+                `docker://docker.io/library/${image}:${tag}`
+            ])
             return image
+        } catch {
+            continue
         }
     }
 }
