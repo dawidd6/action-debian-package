@@ -39,6 +39,7 @@ async function main() {
         const artifactsRelativeDirectory = core.getInput("artifacts_directory") || "./"
         const osDistribution = core.getInput("os_distribution") || ""
         const lintianOpts = core.getInput("lintian_opts") || ""
+        const lintianRun = core.getBooleanInput('lintian_run') || false
 
         const workspaceDirectory = process.cwd()
         const sourceDirectory = path.join(workspaceDirectory, sourceRelativeDirectory)
@@ -72,7 +73,8 @@ async function main() {
             sourceDirectory: sourceDirectory,
             buildDirectory: buildDirectory,
             artifactsDirectory: artifactsDirectory,
-            lintianOpts: lintianOpts
+            lintianOpts: lintianOpts,
+	    lintianRun: lintianRun
         }
         console.log(details)
         core.endGroup()
@@ -187,20 +189,21 @@ async function main() {
         ])
         core.endGroup()
 
-        core.startGroup("Run static analysis")
-        await exec.exec("docker", [
-            "exec",
-            container,
-	    "find",
-            buildDirectory,
-            "-maxdepth", "1",
-            "-name", `*${version}*.changes`,
-            "-type", "f",
-            "-print",
-            "-exec", "lintian", lintianOpts, "{}", "\+"
-
-        ])
-        core.endGroup()
+	if (lintianRun){
+            core.startGroup("Run static analysis")
+            await exec.exec("docker", [
+                "exec",
+                container,
+	        "find",
+                buildDirectory,
+                "-maxdepth", "1",
+                "-name", `*${version}*.changes`,
+                "-type", "f",
+                "-print",
+                "-exec", "lintian", lintianOpts, "{}", "\+"
+            ])
+            core.endGroup()
+	}
 
         core.startGroup("Install built packages")
         await exec.exec("docker", [
