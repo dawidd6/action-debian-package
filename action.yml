@@ -23,6 +23,10 @@ inputs:
     description: Command line parameters provided to 'lintian'
     required: false
     default: ""
+  lintian_run:
+    description: Run lintian checks
+    required: false
+    default: false
 runs:
   using: node16
   main: main.js

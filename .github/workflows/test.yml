@@ -17,6 +17,7 @@ jobs:
             repo: https://salsa.debian.org/debian/at.git
             ref: debian/3.1.23-1
             lintian_opts: "-v"
+            lintian_run: false
           - package: lolcat
             arch: arm64
             repo: https://salsa.debian.org/ruby-team/lolcat.git
@@ -27,6 +28,7 @@ jobs:
             repo: https://salsa.debian.org/go-team/packages/micro.git
             ref: debian/2.0.6-2_bpo10+1
             lintian_opts: "-v"
+            lintian_run: true
           - package: dropbear
             arch: amd64
             repo: https://salsa.debian.org/debian/dropbear.git
@@ -59,6 +61,7 @@ jobs:
           source_directory: ${{matrix.package}}
           artifacts_directory: artifacts
           lintian_opts: ${{matrix.lintian_opts}}
+          lintian_run: ${{matrix.lintian_run || false }}
       - name: Check files
         run: |
           ls -lh artifacts/${{matrix.package}}*.*
