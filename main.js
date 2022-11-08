@@ -159,8 +159,7 @@ async function main() {
         await exec.exec("docker", [
             "exec",
             container,
-            "bash", "-c",
-            "git config --global --add safe.directory ${PWD}"
+            "git", "config", "--global", "--add", "safe.directory", sourceDirectory
         ])
         core.endGroup()
 
