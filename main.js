@@ -128,11 +128,30 @@ async function main() {
         ])
         core.endGroup()
 
+        // The goofy usage of "apt-get -t || apt-get" here is because
+        // of github issue #63.
+        //
+        // When building on a "normal" release like "bullseye", the
+        // debian container is generated with "bullseye-updates" enabled.
+        // This can cause problems when specifying the target release as
+        // `-t bullseye`.  For example, if "bullseye-updates" contains
+        // a new version of libc6 and libc6-dev, then the image will
+        // contain the updated libc6, but "apt-get -t bullseye" would try
+        // to install the old version of libc6-dev.  Since libc6-dev has
+        // a versioned dependency on the matching libc6, this will fail.
+        //
+        // On a backports release like "bullseye-backports", the
+        // backports package archive has a lower priority than the
+        // "parent" package archive.  When building in this situation
+        // apt-get needs "-t" in order to raise the priority of the
+        // backports packages so that they get installed, instead of
+        // installing the older packages from the parent release.
         core.startGroup("Install development packages")
         await exec.exec("docker", [
             "exec",
             container,
-            "apt-get", "install", "-yq", "dpkg-dev", "debhelper", "devscripts"
+            "bash", "-c",
+            `apt-get install -yq -t '${imageTag}' dpkg-dev debhelper devscripts || apt-get install -yq dpkg-dev debhelper devscripts`
         ])
         core.endGroup()
 
@@ -141,7 +160,8 @@ async function main() {
             await exec.exec("docker", [
                 "exec",
                 container,
-                "apt-get", "build-dep", "-yq", sourceDirectory
+                "bash", "-c",
+                `apt-get build-dep -yq -t '${imageTag}' '${sourceDirectory}' || apt-get build-dep -yq '${sourceDirectory}'`
             ])
             core.endGroup()
         }
