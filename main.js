@@ -159,6 +159,14 @@ async function main() {
         ])
         core.endGroup()
 
+        core.startGroup("Trust this git repo")
+        await exec.exec("docker", [
+            "exec",
+            container,
+            "git", "config", "--global", "--add", "safe.directory", sourceDirectory
+        ])
+        core.endGroup()
+
         if (imageTag != "trusty") {
             core.startGroup("Install build dependencies")
             await exec.exec("docker", [
