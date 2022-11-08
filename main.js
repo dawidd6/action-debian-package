@@ -74,7 +74,7 @@ async function main() {
             buildDirectory: buildDirectory,
             artifactsDirectory: artifactsDirectory,
             lintianOpts: lintianOpts,
-	    lintianRun: lintianRun
+            lintianRun: lintianRun
         }
         console.log(details)
         core.endGroup()
@@ -189,12 +189,12 @@ async function main() {
         ])
         core.endGroup()
 
-	if (lintianRun){
+        if (lintianRun) {
             core.startGroup("Run static analysis")
             await exec.exec("docker", [
                 "exec",
                 container,
-	        "find",
+                "find",
                 buildDirectory,
                 "-maxdepth", "1",
                 "-name", `*${version}*.changes`,
@@ -203,7 +203,7 @@ async function main() {
                 "-exec", "lintian", lintianOpts, "{}", "\+"
             ])
             core.endGroup()
-	}
+        }
 
         core.startGroup("Install built packages")
         await exec.exec("docker", [
