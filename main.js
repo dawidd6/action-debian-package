@@ -183,8 +183,14 @@ async function main() {
             await exec.exec("docker", [
                 "exec",
                 container,
-                "git-deborig",
-                "HEAD"
+                "tar",
+                "--exclude-vcs",
+                "--exclude=debian",
+                "--create",
+                "--gzip",
+                "--verbose",
+                `--file=../${pkg}_${version}.orig.tar.gz`,
+                "."
             ])
             core.endGroup()
         }

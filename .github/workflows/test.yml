@@ -15,7 +15,7 @@ jobs:
           - package: at
             arch: arm
             repo: https://salsa.debian.org/debian/at.git
-            ref: debian/3.1.23-1
+            ref: debian/3.2.2-1
             lintian_opts: "-v"
             lintian_run: false
           - package: lolcat
