@@ -54,6 +54,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Clone repo
         run: git clone --depth=1 ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
+      - name: Remove skopeo (for testing installation)
+        run: sudo rm -f $(which skopeo)
       - name: Test run
         uses: ./
         with:
