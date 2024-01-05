@@ -1,5 +1,6 @@
 const core = require("@actions/core")
 const exec = require("@actions/exec")
+const io = require('@actions/io')
 const firstline = require("firstline")
 const path = require("path")
 const fs = require("fs")
@@ -16,7 +17,6 @@ function getImageTag(imageName, distribution) {
 }
 
 async function getImageName(distribution) {
-    const io = require('@actions/io')
     const tag = getImageTag("", distribution)
     for (const image of ["debian", "ubuntu"]) {
         try {
