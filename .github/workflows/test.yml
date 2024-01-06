@@ -39,6 +39,7 @@ jobs:
             repo: https://github.com/dawidd6/deber.git
             ref: v1.0.0
             lintian_opts: "-v"
+            install_skopeo: true
           - package: netcat-openbsd
             arch: arm64
             repo: https://git.launchpad.net/ubuntu/+source/netcat-openbsd
@@ -52,10 +53,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Clone repo
         run: git clone --depth=1 ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
+
       - name: Remove skopeo (for testing installation)
-        run: sudo rm -f $(which skopeo)
+        if: ${{matrix.install_skopeo}}
+        run: sudo rm -v $(which skopeo)
+
       - name: Test run
         uses: ./
         with:
@@ -63,7 +68,8 @@ jobs:
           source_directory: ${{matrix.package}}
           artifacts_directory: artifacts
           lintian_opts: ${{matrix.lintian_opts}}
-          lintian_run: ${{matrix.lintian_run || false }}
+          lintian_run: ${{matrix.lintian_run || false}}
+
       - name: Check files
         run: |
           ls -lh artifacts/${{matrix.package}}*.*
