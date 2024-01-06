@@ -1,5 +1,6 @@
 const core = require("@actions/core")
 const exec = require("@actions/exec")
+const io = require('@actions/io')
 const firstline = require("firstline")
 const path = require("path")
 const fs = require("fs")
@@ -16,6 +17,21 @@ function getImageTag(imageName, distribution) {
 }
 
 async function getImageName(distribution) {
+    const skopeoPath = await io.which('skopeo', false)
+    if (!skopeoPath) {
+        core.startGroup("Install skopeo")
+        await exec.exec("sudo", [
+            "apt-get",
+            "update"
+        ])
+        await exec.exec("sudo", [
+            "apt-get",
+            "-y",
+            "install",
+            "skopeo"
+        ])
+        core.endGroup()
+    }
     const tag = getImageTag("", distribution)
     for (const image of ["debian", "ubuntu"]) {
         try {
