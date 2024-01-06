@@ -1,4 +1,4 @@
-# Build Debian package Github Action
+# Build Debian package GitHub Action
 
 An action that builds a Debian package from source in a Docker container.
 
