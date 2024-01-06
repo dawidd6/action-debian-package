@@ -59,7 +59,7 @@ jobs:
 
       - name: Remove skopeo (for testing installation)
         if: ${{matrix.install_skopeo}}
-        run: sudo rm -v $(which skopeo)
+        run: sudo apt-get remove -y skopeo
 
       - name: Test run
         uses: ./
