@@ -4,6 +4,25 @@ const io = require('@actions/io')
 const firstline = require("firstline")
 const path = require("path")
 const fs = require("fs")
+const os = require('os');
+
+// Map CPU architectures to qemu-user-static package suffixes
+const hostArchMap = {
+    x64: 'amd64',     // 64-bit Intel/AMD
+    ia32: 'i386',     // 32-bit Intel
+    arm: 'armhf',     // ARM hard float (32-bit)
+    arm64: 'arm64',   // ARM 64-bit (aarch64)
+    aarch64: 'arm64', // alias for arm64
+    ppc64: 'ppc64',   // PowerPC 64-bit BE
+    ppc64le: 'ppc64el', // PowerPC 64-bit LE
+    s390: 's390',     // IBM System z 31-bit
+    s390x: 's390x',   // IBM System z 64-bit
+};
+// List of qemu package-supported architectures
+const qemuSupportedArchs = ['amd64', 'i386'];
+
+const hostArchRaw = os.arch();  // e.g. 'x64', 'arm64', 'ia32', etc.
+const hostArch = hostArchMap[hostArchRaw] || hostArchRaw;
 
 function getImageTag(imageName, distribution) {
     if (imageName == "debian") {
@@ -95,12 +114,41 @@ async function main() {
         console.log(details)
         core.endGroup()
 
-        if (cpuArchitecture != "amd64") {
-            core.startGroup("Install QEMU")
-            // Need newer QEMU to avoid errors
-            await exec.exec("wget", ["http://mirrors.kernel.org/ubuntu/pool/universe/q/qemu/qemu-user-static_6.2+dfsg-2ubuntu6_amd64.deb", "-O", "/tmp/qemu.deb"])
-            await exec.exec("sudo", ["dpkg", "-i", "/tmp/qemu.deb"])
-            core.endGroup()
+        core.info(`Host architecture detected: ${hostArch} (raw: ${hostArchRaw})`);
+        core.info(`Target CPU architecture: ${cpuArchitecture}`);
+
+        // Only install QEMU if host and target architectures differ
+        if (cpuArchitecture !== hostArch) {
+          // Check if the host architecture is supported by the QEMU package
+          if (!qemuSupportedArchs.includes(hostArch)) {
+            core.info(`QEMU package not available for host architecture (${hostArch}), skipping QEMU installation.`);
+          } else {
+            core.startGroup("Install QEMU");
+
+            // Construct the download URL for the appropriate QEMU static binary package
+            const qemuUrl = `http://mirrors.kernel.org/ubuntu/pool/universe/q/qemu/qemu-user-static_6.2+dfsg-2ubuntu6_${cpuArchitecture}.deb`;
+
+            try {
+              // Download the QEMU Debian package to a temporary location
+              await exec.exec("wget", [qemuUrl, "-O", "/tmp/qemu.deb"]);
+            } catch (error) {
+              core.setFailed(`Failed to download QEMU package from ${qemuUrl}: ${error.message}`);
+              process.exit(1);
+            }
+
+            try {
+              // Install the downloaded QEMU package using dpkg
+              await exec.exec("sudo", ["dpkg", "-i", "/tmp/qemu.deb"]);
+            } catch (error) {
+              core.setFailed(`Failed to install QEMU package: ${error.message}`);
+              process.exit(1);
+            }
+
+            core.endGroup();
+          }
+        } else {
+          // Skip QEMU installation if host and target architectures match
+          core.info(`Host architecture (${hostArch}) matches target architecture (${cpuArchitecture}), skipping QEMU installation.`);
         }
 
         core.startGroup("Create container")
