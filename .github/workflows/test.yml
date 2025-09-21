@@ -27,13 +27,13 @@ jobs:
           - package: micro
             arch: amd64
             repo: https://salsa.debian.org/go-team/packages/micro.git
-            ref: debian/2.0.6-2_bpo10+1
+            ref: debian/2.0.14-1
             lintian_opts: "-v"
             lintian_run: true
           - package: dropbear
             arch: amd64
             repo: https://salsa.debian.org/debian/dropbear.git
-            ref: debian/2022.83-1_bpo11+1
+            ref: debian/2022.83-1+deb12u3
             lintian_opts: "-v"
           - package: deber
             arch: arm64
