@@ -124,26 +124,17 @@ async function main() {
             core.info(`QEMU package not available for host architecture (${hostArch}), skipping QEMU installation.`);
           } else {
             core.startGroup("Install QEMU");
-
-            // Construct the download URL for the appropriate QEMU static binary package
-            const qemuUrl = `http://mirrors.kernel.org/ubuntu/pool/universe/q/qemu/qemu-user-static_6.2+dfsg-2ubuntu6_${cpuArchitecture}.deb`;
-
-            try {
-              // Download the QEMU Debian package to a temporary location
-              await exec.exec("wget", [qemuUrl, "-O", "/tmp/qemu.deb"]);
-            } catch (error) {
-              core.setFailed(`Failed to download QEMU package from ${qemuUrl}: ${error.message}`);
-              process.exit(1);
-            }
-
-            try {
-              // Install the downloaded QEMU package using dpkg
-              await exec.exec("sudo", ["dpkg", "-i", "/tmp/qemu.deb"]);
-            } catch (error) {
-              core.setFailed(`Failed to install QEMU package: ${error.message}`);
-              process.exit(1);
-            }
-
+            // Need newer QEMU to avoid errors
+            await exec.exec("sudo", [
+                "apt-get",
+                "update"
+            ])
+            await exec.exec("sudo", [
+                "apt-get",
+                "-y",
+                "install",
+                "qemu-user-static"
+            ])
             core.endGroup();
           }
         } else {
