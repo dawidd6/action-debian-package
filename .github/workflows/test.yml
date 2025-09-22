@@ -53,7 +53,7 @@ jobs:
             lintian_opts: "-v"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Clone repo
         run: git clone --depth=1 ${{matrix.repo}} -b ${{matrix.ref}} ${{matrix.package}}
