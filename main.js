@@ -1,10 +1,10 @@
-const core = require("@actions/core")
-const exec = require("@actions/exec")
-const io = require('@actions/io')
-const firstline = require("firstline")
-const path = require("path")
-const fs = require("fs")
-const os = require('os');
+import * as core from "@actions/core"
+import * as exec from "@actions/exec"
+import * as io from '@actions/io'
+import firstline from "firstline"
+import path from "path"
+import fs from "fs"
+import os from 'os'
 
 // Map CPU architectures to qemu-user-static package suffixes
 const hostArchMap = {
