@@ -1,10 +1,10 @@
 import * as core from "@actions/core"
 import * as exec from "@actions/exec"
-import * as io from '@actions/io'
+import * as io from "@actions/io"
 import firstline from "firstline"
-import path from "path"
-import fs from "fs"
-import os from 'os'
+import * as path from "path"
+import * as fs from "fs"
+import * as os from "os"
 
 // Map CPU architectures to qemu-user-static package suffixes
 const hostArchMap = {
