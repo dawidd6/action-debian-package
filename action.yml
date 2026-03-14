@@ -28,6 +28,6 @@ inputs:
     required: false
     default: false
 runs:
-  using: node16
+  using: node24
   main: main.js
   post: post.js
